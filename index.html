@@ -140,7 +140,7 @@
       align-self: flex-start;
     }
 
-    /* ESTADO "A ESBOÇAR A IDEIA" + CONTAGEM % (IGUAL À FOTO) */
+    /* ESTADO "A ESBOÇAR A IDEIA" + CONTAGEM % */
     .sketch-stage {
       display: flex;
       flex-direction: column;
@@ -190,7 +190,7 @@
       border: 1px solid rgba(255, 255, 255, 0.08);
     }
 
-    /* MÍDIA FINAL (IMAGEM OU VÍDEO) */
+    /* MÍDIA FINAL (IMAGEM OU VÍDEO EM PAUSA) */
     .msg-ai-media-box {
       position: relative;
       width: 100%;
@@ -214,6 +214,19 @@
       object-fit: cover;
       display: block;
       border-radius: 18px;
+    }
+
+    .video-paused-tag {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: rgba(0, 0, 0, 0.72);
+      color: #E8EAED;
+      font-size: 11px;
+      padding: 4px 9px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.12);
+      pointer-events: none;
     }
 
     .img-share-badge {
@@ -421,22 +434,29 @@
 
     .tabs-bar {
       display: flex;
+      overflow-x: auto;
       background: #101112;
       padding: 6px;
       gap: 6px;
       border-bottom: 1px solid var(--border-subtle);
     }
 
+    .tabs-bar::-webkit-scrollbar {
+      height: 0px;
+    }
+
     .tab-btn {
       flex: 1;
-      padding: 10px 6px;
+      min-width: 105px;
+      padding: 10px 8px;
       border-radius: 12px;
       border: none;
       background: transparent;
       color: var(--text-secondary);
-      font-size: 13px;
+      font-size: 12.5px;
       font-weight: 600;
       cursor: pointer;
+      white-space: nowrap;
     }
 
     .tab-btn.active {
@@ -471,7 +491,7 @@
       color: #B0B5BA;
     }
 
-    .field-input, .field-textarea {
+    .field-input, .field-textarea, .field-select {
       background: #222326;
       border: 1px solid #333539;
       border-radius: 12px;
@@ -507,14 +527,14 @@
       cursor: pointer;
     }
 
-    .qa-card {
+    .qa-card, .video-lib-card {
       background: #1E1F21;
       border: 1px solid #2D2E32;
       border-radius: 14px;
       padding: 12px;
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: 8px;
     }
 
     .qa-card-top {
@@ -544,14 +564,22 @@
       margin-top: 4px;
     }
 
+    .video-lib-preview {
+      width: 100%;
+      max-height: 170px;
+      border-radius: 10px;
+      background: #000;
+    }
+
     .qa-card-actions {
       display: flex;
+      flex-wrap: wrap;
       gap: 8px;
-      margin-top: 6px;
+      margin-top: 4px;
     }
 
     .mini-btn {
-      padding: 5px 10px;
+      padding: 6px 10px;
       border-radius: 8px;
       border: none;
       font-size: 12px;
@@ -630,7 +658,7 @@
   <footer class="bottom-bar">
     <div class="pending-img-preview" id="pendingImgPreview">
       <div id="pendingMediaThumbWrap"></div>
-      <span style="font-size:12px; color:#ccc;">Mídia anexada</span>
+      <span style="font-size:12px; color:#ccc;">Mídia anexada (em pausa)</span>
       <button class="remove-pending-btn" id="btnRemovePendingImg">✕</button>
     </div>
 
@@ -678,7 +706,8 @@
       </div>
 
       <div class="tabs-bar">
-        <button class="tab-btn active" data-tab="tab-qa">Perguntas & Respostas</button>
+        <button class="tab-btn active" data-tab="tab-qa">Perguntas</button>
+        <button class="tab-btn" data-tab="tab-videos">Vídeos (<span id="videoTabCount">0</span>)</button>
         <button class="tab-btn" data-tab="tab-img">Adicionar Mídia</button>
         <button class="tab-btn" data-tab="tab-cfg">Configurações</button>
       </div>
@@ -688,16 +717,23 @@
         <div class="tab-panel active" id="tab-qa">
           <div class="field-group">
             <label>Pergunta que você vai fazer (aceita palavras quase idênticas):</label>
-            <input type="text" class="field-input" id="newQuestionInput" placeholder="Ex: Cria aí uma imagem de uma pessoa saltando" />
+            <input type="text" class="field-input" id="newQuestionInput" placeholder="Ex: Mostra o vídeo" />
           </div>
 
           <div class="field-group">
-            <label>Resposta que o assistente vai dar (opcional se enviar só mídia):</label>
-            <textarea class="field-textarea" id="newAnswerInput" placeholder="Ex: Aqui está a tua criação!"></textarea>
+            <label>Resposta em texto do assistente (opcional):</label>
+            <textarea class="field-textarea" id="newAnswerInput" placeholder="Ex: Aqui está o vídeo (em pausa)."></textarea>
           </div>
 
           <div class="field-group">
-            <label>Imagem OU Vídeo na resposta (aparece após a contagem de %):</label>
+            <label>Escolher vídeo já importado no Gerenciador de Vídeos:</label>
+            <select class="field-select" id="qaLinkedVideoSelect">
+              <option value="">-- Nenhum vídeo selecionado --</option>
+            </select>
+          </div>
+
+          <div class="field-group">
+            <label>Ou anexar imagem/mídia nova agora:</label>
             <input type="file" id="qaResponseMediaInput" accept="image/*,video/*" class="field-input" />
             <div id="qaResponseMediaPreview"></div>
           </div>
@@ -707,17 +743,45 @@
           <hr style="border:0; border-top:1px solid #2C2D30; margin:4px 0;">
 
           <div class="field-group">
-            <label>Escolher / Testar Perguntas Salvas (<span id="qaCountText">0</span>):</label>
+            <label>Perguntas Salvas (<span id="qaCountText">0</span>):</label>
             <input type="text" class="field-input" id="searchQaInput" placeholder="Pesquisar nas perguntas salvas..." />
           </div>
 
           <div id="qaListContainer" style="display:flex; flex-direction:column; gap:10px;"></div>
         </div>
 
-        <!-- ABA 2: ADICIONAR IMAGEM OU VÍDEO -->
+        <!-- ABA 2: GERENCIADOR DE VÍDEOS (IMPORTA 1 VEZ, SEMPRE EM PAUSA) -->
+        <div class="tab-panel" id="tab-videos">
+          <p style="font-size:13.5px; color:#B0B5BA; line-height:1.45;">
+            Importe o vídeo <strong>apenas uma vez</strong>. Ele fica salvo no gerenciador e <strong>nunca toca automaticamente</strong> (sempre em pausa). Você pode vincular o mesmo vídeo a várias perguntas e salvar tudo dentro do código HTML.
+          </p>
+
+          <div class="field-group">
+            <label>Nome/identificação do vídeo:</label>
+            <input type="text" class="field-input" id="libVideoTitleInput" placeholder="Ex: Vídeo da apresentação" />
+          </div>
+
+          <div class="field-group">
+            <label>Pergunta/gatilho automático (opcional):</label>
+            <input type="text" class="field-input" id="libVideoTriggerInput" placeholder="Ex: Manda o vídeo" />
+          </div>
+
+          <div class="field-group">
+            <label>Selecionar arquivo de vídeo:</label>
+            <input type="file" id="libVideoFileInput" accept="video/*" class="field-input" />
+          </div>
+
+          <button class="primary-btn" id="btnAddVideoToLibrary">Importar Vídeo (Salvo em Pausa)</button>
+
+          <hr style="border:0; border-top:1px solid #2C2D30; margin:4px 0;">
+
+          <div id="videoLibraryList" style="display:flex; flex-direction:column; gap:12px;"></div>
+        </div>
+
+        <!-- ABA 3: ADICIONAR IMAGEM OU VÍDEO NO CHAT -->
         <div class="tab-panel" id="tab-img">
           <p style="font-size:14px; color:#B0B5BA; line-height:1.4;">
-            Envie uma imagem ou vídeo direto no chat. Se a pergunta corresponder a uma resposta com mídia, o assistente fará a contagem antes de mostrar.
+            Adicione uma imagem ou vídeo para enviar no chat. Vídeos enviados sempre ficam em pausa.
           </p>
 
           <div class="field-group">
@@ -727,14 +791,24 @@
 
           <div class="field-group">
             <label>Legenda / Pergunta opcional:</label>
-            <input type="text" class="field-input" id="directChatMediaCaption" placeholder="Ex: Cria aí uma imagem..." />
+            <input type="text" class="field-input" id="directChatMediaCaption" placeholder="Ex: Olha esse vídeo..." />
           </div>
 
           <button class="primary-btn" id="btnSendDirectMedia">Enviar no Chat</button>
         </div>
 
-        <!-- ABA 3: CONFIGURAÇÕES -->
+        <!-- ABA 4: CONFIGURAÇÕES E SALVAR DENTRO DO HTML -->
         <div class="tab-panel" id="tab-cfg">
+          <div class="field-group">
+            <label>Salvar tudo dentro de um novo arquivo HTML (inclui perguntas, vídeos e config):</label>
+            <button class="primary-btn" id="btnDownloadEmbeddedHtml">Baixar Código HTML com Tudo Embutido</button>
+            <small style="color:#8E9297; font-size:12px;">
+              Gera um arquivo .html completo contendo todas as informações adicionadas e vídeos embutidos para não serem removidos.
+            </small>
+          </div>
+
+          <hr style="border:0; border-top:1px solid #2C2D30; margin:4px 0;">
+
           <div class="field-group">
             <label>Texto da contagem antes da imagem/vídeo:</label>
             <input type="text" class="field-input" id="cfgSketchLabelInput" value="A esboçar a ideia" />
@@ -763,8 +837,8 @@
           <button class="primary-btn" id="btnSaveSettings">Salvar Configurações</button>
 
           <div style="display:flex; gap:8px; margin-top:6px;">
-            <button class="secondary-btn" style="flex:1;" id="btnExportData">Exportar Backup</button>
-            <button class="secondary-btn" style="flex:1;" id="btnImportTrigger">Importar Backup</button>
+            <button class="secondary-btn" style="flex:1;" id="btnExportData">Exportar JSON</button>
+            <button class="secondary-btn" style="flex:1;" id="btnImportTrigger">Importar JSON</button>
             <input type="file" id="importFileInput" accept=".json" hidden />
           </div>
 
@@ -776,9 +850,12 @@
 
   <div class="toast" id="toast"></div>
 
+  <!-- DADOS EMBUTIDOS NO HTML (NÃO REMOVIDOS AO GERAR HTML COMPLETO) -->
+  <script id="embedded-app-data" type="application/json">null</script>
+
   <script>
     // ==========================================
-    // DADOS INICIAIS
+    // DADOS INICIAIS E EMBUTIDOS
     // ==========================================
     const DEFAULT_QA = [
       {
@@ -786,24 +863,12 @@
         question: "Ola",
         answer: "Olá! 😊👋 Como estás?\n\nEstou aqui para te ajudar. O que vamos fazer hoje?",
         media: "",
-        mediaType: ""
-      },
-      {
-        id: 2,
-        question: "Cria aí uma imagem de uma pessoa saltando e em alegria",
-        answer: "",
-        media: "",
-        mediaType: ""
+        mediaType: "",
+        videoId: ""
       }
     ];
 
-    const STORAGE_KEY_QA = "assistente_ia_qa_v2";
-    const STORAGE_KEY_CHAT = "assistente_ia_chat_v2";
-    const STORAGE_KEY_CFG = "assistente_ia_cfg_v2";
-
-    let qaDatabase = JSON.parse(localStorage.getItem(STORAGE_KEY_QA)) || DEFAULT_QA;
-    let chatHistory = JSON.parse(localStorage.getItem(STORAGE_KEY_CHAT)) || [];
-    let appConfig = JSON.parse(localStorage.getItem(STORAGE_KEY_CFG)) || {
+    const DEFAULT_CONFIG = {
       sketchLabel: "A esboçar a ideia",
       sketchDuration: 3,
       placeholder: "Responder ao ChatG...",
@@ -811,11 +876,35 @@
       fallback: "Entendi! Guardei a tua mensagem. Podes abrir os três pontinhos no canto superior direito para cadastrar uma resposta personalizada para essa pergunta."
     };
 
+    const STORAGE_KEY_QA = "assistente_ia_qa_v3";
+    const STORAGE_KEY_VIDEOS = "assistente_ia_videos_v3";
+    const STORAGE_KEY_CHAT = "assistente_ia_chat_v3";
+    const STORAGE_KEY_CFG = "assistente_ia_cfg_v3";
+
+    let embeddedData = null;
+    try {
+      const rawEmbedded = document.getElementById("embedded-app-data")?.textContent;
+      if (rawEmbedded && rawEmbedded.trim() !== "null") {
+        embeddedData = JSON.parse(rawEmbedded);
+      }
+    } catch (e) {}
+
+    let videoLibrary = JSON.parse(localStorage.getItem(STORAGE_KEY_VIDEOS)) || (embeddedData?.videoLibrary) || [];
+    let qaDatabase = JSON.parse(localStorage.getItem(STORAGE_KEY_QA)) || (embeddedData?.qaDatabase) || DEFAULT_QA;
+    let chatHistory = JSON.parse(localStorage.getItem(STORAGE_KEY_CHAT)) || (embeddedData?.chatHistory) || [];
+    let appConfig = Object.assign(
+      {},
+      DEFAULT_CONFIG,
+      JSON.parse(localStorage.getItem(STORAGE_KEY_CFG)) || (embeddedData?.appConfig) || {}
+    );
+
     let pendingUserMedia = "";
     let pendingUserMediaType = "";
 
     let pendingQaMedia = "";
     let pendingQaMediaType = "";
+
+    let pendingLibVideoData = "";
 
     // ==========================================
     // ELEMENTOS DOM
@@ -837,6 +926,19 @@
     const pendingImgPreview = document.getElementById("pendingImgPreview");
     const pendingMediaThumbWrap = document.getElementById("pendingMediaThumbWrap");
     const btnRemovePendingImg = document.getElementById("btnRemovePendingImg");
+
+    function persistAllLocal() {
+      try {
+        localStorage.setItem(STORAGE_KEY_QA, JSON.stringify(qaDatabase));
+        localStorage.setItem(STORAGE_KEY_VIDEOS, JSON.stringify(videoLibrary));
+        localStorage.setItem(STORAGE_KEY_CHAT, JSON.stringify(chatHistory));
+        localStorage.setItem(STORAGE_KEY_CFG, JSON.stringify(appConfig));
+        return true;
+      } catch (e) {
+        showToast("Aviso: espaço local cheio para vídeo grande. Use 'Baixar HTML com Tudo Embutido'.");
+        return false;
+      }
+    }
 
     // ==========================================
     // SIMILARIDADE (PALAVRAS QUASE IDÊNTICAS)
@@ -898,10 +1000,15 @@
       return Math.max(charScore, wordScore);
     }
 
+    function getVideoById(videoId) {
+      return videoLibrary.find(v => String(v.id) === String(videoId)) || null;
+    }
+
     function findBestAnswer(userText) {
       let bestMatch = null;
       let highestScore = 0;
 
+      // 1. Verifica nas perguntas cadastradas
       for (const item of qaDatabase) {
         const score = calculateSimilarity(userText, item.question);
         if (score > highestScore) {
@@ -910,11 +1017,37 @@
         }
       }
 
+      // 2. Verifica também nos gatilhos diretos de vídeos do gerenciador
+      for (const vid of videoLibrary) {
+        if (!vid.trigger) continue;
+        const score = calculateSimilarity(userText, vid.trigger);
+        if (score > highestScore) {
+          highestScore = score;
+          bestMatch = {
+            question: vid.trigger,
+            answer: vid.title ? `🎬 ${vid.title} (em pausa)` : "🎬 Vídeo pronto (em pausa)",
+            media: vid.data,
+            mediaType: "video"
+          };
+        }
+      }
+
       if (bestMatch && highestScore >= Number(appConfig.similarityThreshold || 65)) {
+        let resolvedMedia = bestMatch.media || "";
+        let resolvedMediaType = bestMatch.mediaType || "";
+
+        if (bestMatch.videoId) {
+          const linkedVid = getVideoById(bestMatch.videoId);
+          if (linkedVid) {
+            resolvedMedia = linkedVid.data;
+            resolvedMediaType = "video";
+          }
+        }
+
         return {
           text: bestMatch.answer,
-          media: bestMatch.media || "",
-          mediaType: bestMatch.mediaType || ""
+          media: resolvedMedia,
+          mediaType: resolvedMediaType
         };
       }
 
@@ -926,33 +1059,43 @@
     }
 
     // ==========================================
-    // UTILITÁRIOS DE MÍDIA E UI
+    // MÍDIA (VÍDEOS SEMPRE EM PAUSA / SEM AUTOPLAY)
     // ==========================================
     function showToast(msg) {
       const toast = document.getElementById("toast");
       toast.textContent = msg;
       toast.classList.add("show");
-      setTimeout(() => toast.classList.remove("show"), 2300);
+      setTimeout(() => toast.classList.remove("show"), 2400);
     }
 
-    function saveChat() {
-      try {
-        localStorage.setItem(STORAGE_KEY_CHAT, JSON.stringify(chatHistory));
-      } catch (e) {
-        showToast("Aviso: mídia muito grande para salvar no histórico local.");
-      }
-    }
-
-    function createMediaElement(src, type, className = "") {
+    function createMediaElement(src, type, className = "", showPausedBadge = false) {
       if (type === "video") {
+        const wrap = document.createElement("div");
+        wrap.style.position = "relative";
+        wrap.style.width = "100%";
+
         const vid = document.createElement("video");
         vid.src = src;
         vid.controls = true;
-        vid.autoplay = true;
-        vid.loop = true;
+        vid.autoplay = false; // Nunca toca automaticamente
+        vid.loop = false;
+        vid.preload = "metadata";
         vid.playsInline = true;
+        vid.pause();
         if (className) vid.className = className;
-        return vid;
+
+        wrap.appendChild(vid);
+
+        if (showPausedBadge) {
+          const badge = document.createElement("span");
+          badge.className = "video-paused-tag";
+          badge.textContent = "⏸ Em pausa";
+          vid.addEventListener("play", () => { badge.style.display = "none"; });
+          vid.addEventListener("pause", () => { badge.style.display = "block"; });
+          wrap.appendChild(badge);
+        }
+
+        return wrap;
       } else {
         const img = document.createElement("img");
         img.src = src;
@@ -994,7 +1137,7 @@
       if (msg.media) {
         const mediaBox = document.createElement("div");
         mediaBox.className = "msg-ai-media-box";
-        mediaBox.appendChild(createMediaElement(msg.media, msg.mediaType));
+        mediaBox.appendChild(createMediaElement(msg.media, msg.mediaType, "", msg.mediaType === "video"));
 
         const shareBadge = document.createElement("button");
         shareBadge.className = "img-share-badge";
@@ -1026,7 +1169,7 @@
           wrapper.className = "msg-user-wrapper";
 
           if (msg.media) {
-            wrapper.appendChild(createMediaElement(msg.media, msg.mediaType, "msg-user-media"));
+            wrapper.appendChild(createMediaElement(msg.media, msg.mediaType, "msg-user-media", msg.mediaType === "video"));
           }
 
           if (msg.text) {
@@ -1045,7 +1188,7 @@
       chatContainer.scrollTop = chatContainer.scrollHeight;
     }
 
-    // Contagem animada antes de exibir imagem ou vídeo
+    // Contagem animada antes de exibir imagem ou vídeo (vídeo entra já em pausa)
     function playSketchCountdownThenReveal(reply) {
       const stageWrapper = document.createElement("div");
       stageWrapper.className = "msg-ai-wrapper";
@@ -1091,7 +1234,7 @@
           };
           chatHistory.push(aiMsg);
           appendAiMessageElements(aiMsg);
-          saveChat();
+          persistAllLocal();
         }
       }, 60);
     }
@@ -1134,11 +1277,10 @@
       pendingMediaThumbWrap.innerHTML = "";
       updateSendIcon();
       renderChat();
-      saveChat();
+      persistAllLocal();
 
       const reply = findBestAnswer(text || "midia");
 
-      // Se a resposta tiver imagem ou vídeo, faz a contagem antes de aparecer
       if (reply.media) {
         playSketchCountdownThenReveal(reply);
       } else {
@@ -1151,7 +1293,7 @@
           };
           chatHistory.push(aiMsg);
           appendAiMessageElements(aiMsg);
-          saveChat();
+          persistAllLocal();
         }, 400);
       }
     }
@@ -1168,7 +1310,7 @@
     });
     btnSend.addEventListener("click", () => sendMessage());
 
-    // Anexo rápido no botão '+' (imagem ou vídeo)
+    // Anexo rápido no botão '+'
     btnAttachUserImg.addEventListener("click", () => userImgInput.click());
     userImgInput.addEventListener("change", (e) => {
       const file = e.target.files[0];
@@ -1179,7 +1321,7 @@
         pendingUserMedia = reader.result;
         pendingUserMediaType = isVid ? "video" : "image";
         pendingMediaThumbWrap.innerHTML = "";
-        pendingMediaThumbWrap.appendChild(createMediaElement(pendingUserMedia, pendingUserMediaType, "qa-thumb"));
+        pendingMediaThumbWrap.appendChild(createMediaElement(pendingUserMedia, pendingUserMediaType, "qa-thumb", false));
         pendingImgPreview.style.display = "flex";
         updateSendIcon();
       };
@@ -1196,11 +1338,13 @@
     });
 
     // ==========================================
-    // MENU DOS TRÊS PONTINHOS E CRUD
+    // MENU, GERENCIADOR DE VÍDEOS E CRUD
     // ==========================================
     function openMenuModal() {
       menuModal.classList.add("open");
+      refreshVideoSelect();
       renderQaList();
+      renderVideoLibrary();
     }
 
     btnThreeDots.addEventListener("click", openMenuModal);
@@ -1209,7 +1353,7 @@
 
     btnNewChat.addEventListener("click", () => {
       chatHistory = [];
-      saveChat();
+      persistAllLocal();
       renderChat();
       showToast("Nova conversa iniciada");
     });
@@ -1223,7 +1367,142 @@
       });
     });
 
-    // Prévia da mídia na resposta do assistente
+    function refreshVideoSelect() {
+      const sel = document.getElementById("qaLinkedVideoSelect");
+      const currentVal = sel.value;
+      sel.innerHTML = `<option value="">-- Nenhum vídeo selecionado --</option>`;
+      videoLibrary.forEach(v => {
+        const opt = document.createElement("option");
+        opt.value = v.id;
+        opt.textContent = `🎬 ${v.title || "Vídeo sem nome"}`;
+        sel.appendChild(opt);
+      });
+      sel.value = currentVal;
+    }
+
+    // Importar vídeo 1 vez no Gerenciador de Vídeos (sempre em pausa)
+    const libVideoFileInput = document.getElementById("libVideoFileInput");
+    libVideoFileInput.addEventListener("change", (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        pendingLibVideoData = reader.result;
+        if (!document.getElementById("libVideoTitleInput").value.trim()) {
+          document.getElementById("libVideoTitleInput").value = file.name.replace(/\.[^/.]+$/, "");
+        }
+        showToast("Vídeo carregado (em pausa)");
+      };
+      reader.readAsDataURL(file);
+    });
+
+    document.getElementById("btnAddVideoToLibrary").addEventListener("click", () => {
+      const title = document.getElementById("libVideoTitleInput").value.trim();
+      const trigger = document.getElementById("libVideoTriggerInput").value.trim();
+
+      if (!pendingLibVideoData) {
+        showToast("Escolha um vídeo primeiro!");
+        return;
+      }
+
+      const newVid = {
+        id: "vid_" + Date.now(),
+        title: title || "Vídeo salvo",
+        trigger: trigger,
+        data: pendingLibVideoData
+      };
+
+      videoLibrary.unshift(newVid);
+      persistAllLocal();
+
+      pendingLibVideoData = "";
+      libVideoFileInput.value = "";
+      document.getElementById("libVideoTitleInput").value = "";
+      document.getElementById("libVideoTriggerInput").value = "";
+
+      refreshVideoSelect();
+      renderVideoLibrary();
+      showToast("Vídeo salvo no gerenciador (em pausa)!");
+    });
+
+    function renderVideoLibrary() {
+      const list = document.getElementById("videoLibraryList");
+      document.getElementById("videoTabCount").textContent = videoLibrary.length;
+      list.innerHTML = "";
+
+      if (videoLibrary.length === 0) {
+        list.innerHTML = `<div style="color:#8E9297; font-size:13px;">Nenhum vídeo importado ainda.</div>`;
+        return;
+      }
+
+      videoLibrary.forEach(vid => {
+        const card = document.createElement("div");
+        card.className = "video-lib-card";
+        card.innerHTML = `
+          <div class="qa-q">🎬 ${vid.title}</div>
+          ${vid.trigger ? `<div class="qa-a">Gatilho: "${vid.trigger}"</div>` : `<div class="qa-a">Estado: Sempre em pausa até reproduzir</div>`}
+          <div class="vid-slot"></div>
+          <div class="qa-card-actions">
+            <button class="mini-btn" onclick="sendVideoToChatNow('${vid.id}')">▶ Pedir este vídeo no chat</button>
+            <button class="mini-btn" onclick="selectVideoForQuestion('${vid.id}')">Vincular a pergunta</button>
+            <button class="mini-btn danger" onclick="deleteVideoFromLibrary('${vid.id}')">Excluir</button>
+          </div>
+        `;
+
+        const videoEl = document.createElement("video");
+        videoEl.src = vid.data;
+        videoEl.controls = true;
+        videoEl.autoplay = false;
+        videoEl.preload = "metadata";
+        videoEl.pause();
+        videoEl.className = "video-lib-preview";
+        card.querySelector(".vid-slot").appendChild(videoEl);
+
+        list.appendChild(card);
+      });
+    }
+
+    window.sendVideoToChatNow = function(vidId) {
+      const vid = getVideoById(vidId);
+      if (!vid) return;
+      menuModal.classList.remove("open");
+      const promptText = vid.trigger || `Manda o vídeo ${vid.title}`;
+      chatHistory.push({
+        sender: "user",
+        text: promptText,
+        media: "",
+        mediaType: ""
+      });
+      renderChat();
+      persistAllLocal();
+      playSketchCountdownThenReveal({
+        text: `🎬 ${vid.title} (em pausa)`,
+        media: vid.data,
+        mediaType: "video"
+      });
+    };
+
+    window.selectVideoForQuestion = function(vidId) {
+      refreshVideoSelect();
+      document.getElementById("qaLinkedVideoSelect").value = vidId;
+      document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+      document.querySelectorAll(".tab-panel").forEach(p => p.classList.remove("active"));
+      document.querySelector('.tab-btn[data-tab="tab-qa"]').classList.add("active");
+      document.getElementById("tab-qa").classList.add("active");
+      showToast("Vídeo selecionado para a pergunta!");
+    };
+
+    window.deleteVideoFromLibrary = function(vidId) {
+      videoLibrary = videoLibrary.filter(v => String(v.id) !== String(vidId));
+      qaDatabase = qaDatabase.map(q => String(q.videoId) === String(vidId) ? { ...q, videoId: "" } : q);
+      persistAllLocal();
+      refreshVideoSelect();
+      renderVideoLibrary();
+      renderQaList();
+      showToast("Vídeo removido do gerenciador.");
+    };
+
+    // Prévia da mídia na resposta da pergunta
     const qaResponseMediaInput = document.getElementById("qaResponseMediaInput");
     const qaResponseMediaPreview = document.getElementById("qaResponseMediaPreview");
 
@@ -1236,8 +1515,7 @@
         pendingQaMedia = reader.result;
         pendingQaMediaType = isVid ? "video" : "image";
         qaResponseMediaPreview.innerHTML = "";
-        const el = createMediaElement(pendingQaMedia, pendingQaMediaType, "qa-thumb");
-        qaResponseMediaPreview.appendChild(el);
+        qaResponseMediaPreview.appendChild(createMediaElement(pendingQaMedia, pendingQaMediaType, "qa-thumb", false));
       };
       reader.readAsDataURL(file);
     });
@@ -1246,9 +1524,10 @@
     document.getElementById("btnSaveQA").addEventListener("click", () => {
       const q = document.getElementById("newQuestionInput").value.trim();
       const a = document.getElementById("newAnswerInput").value.trim();
+      const linkedVidId = document.getElementById("qaLinkedVideoSelect").value;
 
-      if (!q || (!a && !pendingQaMedia)) {
-        showToast("Preencha a pergunta e a resposta ou mídia!");
+      if (!q || (!a && !pendingQaMedia && !linkedVidId)) {
+        showToast("Preencha a pergunta e a resposta ou vídeo!");
         return;
       }
 
@@ -1257,22 +1536,20 @@
         question: q,
         answer: a,
         media: pendingQaMedia,
-        mediaType: pendingQaMediaType
+        mediaType: pendingQaMediaType,
+        videoId: linkedVidId
       });
 
-      try {
-        localStorage.setItem(STORAGE_KEY_QA, JSON.stringify(qaDatabase));
-        document.getElementById("newQuestionInput").value = "";
-        document.getElementById("newAnswerInput").value = "";
-        qaResponseMediaInput.value = "";
-        pendingQaMedia = "";
-        pendingQaMediaType = "";
-        qaResponseMediaPreview.innerHTML = "";
-        renderQaList();
-        showToast("Salvo com sucesso!");
-      } catch (e) {
-        showToast("Arquivo grande demais para o armazenamento local.");
-      }
+      persistAllLocal();
+      document.getElementById("newQuestionInput").value = "";
+      document.getElementById("newAnswerInput").value = "";
+      document.getElementById("qaLinkedVideoSelect").value = "";
+      qaResponseMediaInput.value = "";
+      pendingQaMedia = "";
+      pendingQaMediaType = "";
+      qaResponseMediaPreview.innerHTML = "";
+      renderQaList();
+      showToast("Pergunta salva!");
     });
 
     function renderQaList(filter = "") {
@@ -1295,13 +1572,16 @@
         const card = document.createElement("div");
         card.className = "qa-card";
 
-        const typeLabel = item.media ? (item.mediaType === "video" ? " [Vídeo]" : " [Imagem]") : "";
+        const linkedVid = item.videoId ? getVideoById(item.videoId) : null;
+        const typeLabel = linkedVid
+          ? ` [Vídeo: ${linkedVid.title}]`
+          : (item.media ? (item.mediaType === "video" ? " [Vídeo]" : " [Imagem]") : "");
 
         card.innerHTML = `
           <div class="qa-card-top">
             <div class="qa-q">P: ${item.question}${typeLabel}</div>
           </div>
-          <div class="qa-a">R: ${item.answer || (item.media ? "(Mídia com contagem %)" : "")}</div>
+          <div class="qa-a">R: ${item.answer || (typeLabel ? "(Mídia com contagem %)" : "")}</div>
           <div class="qa-thumb-slot"></div>
           <div class="qa-card-actions">
             <button class="mini-btn" onclick="askFromMenu(${item.id})">▶ Fazer essa pergunta agora</button>
@@ -1309,9 +1589,13 @@
           </div>
         `;
 
-        if (item.media) {
+        if (linkedVid) {
           card.querySelector(".qa-thumb-slot").appendChild(
-            createMediaElement(item.media, item.mediaType, "qa-thumb")
+            createMediaElement(linkedVid.data, "video", "qa-thumb", false)
+          );
+        } else if (item.media) {
+          card.querySelector(".qa-thumb-slot").appendChild(
+            createMediaElement(item.media, item.mediaType, "qa-thumb", false)
           );
         }
 
@@ -1332,7 +1616,7 @@
 
     window.deleteQa = function(id) {
       qaDatabase = qaDatabase.filter(i => i.id !== id);
-      localStorage.setItem(STORAGE_KEY_QA, JSON.stringify(qaDatabase));
+      persistAllLocal();
       renderQaList(document.getElementById("searchQaInput").value);
       showToast("Removido!");
     };
@@ -1374,22 +1658,53 @@
       appConfig.similarityThreshold = Number(document.getElementById("cfgSimilarityInput").value) || 65;
       appConfig.fallback = document.getElementById("cfgFallbackInput").value;
 
-      localStorage.setItem(STORAGE_KEY_CFG, JSON.stringify(appConfig));
+      persistAllLocal();
       chatInput.placeholder = appConfig.placeholder;
       showToast("Configurações salvas!");
     });
 
     document.getElementById("btnClearChat").addEventListener("click", () => {
       chatHistory = [];
-      saveChat();
+      persistAllLocal();
       renderChat();
       menuModal.classList.remove("open");
       showToast("Conversa limpa!");
     });
 
-    // Exportar / Importar Backup
+    // ==========================================
+    // GERAR ARQUIVO HTML COM TUDO EMBUTIDO DENTRO DO CÓDIGO
+    // ==========================================
+    document.getElementById("btnDownloadEmbeddedHtml").addEventListener("click", () => {
+      const payload = {
+        qaDatabase,
+        videoLibrary,
+        chatHistory,
+        appConfig
+      };
+
+      const safeJson = JSON.stringify(payload).replace(/<\/script>/gi, "<\\/script>");
+      let htmlSource = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
+      htmlSource = htmlSource.replace(
+        /<script id="embedded-app-data" type="application\/json">[\s\S]*?<\/script>/,
+        `<script id="embedded-app-data" type="application/json">${safeJson}<\/script>`
+      );
+
+      const blob = new Blob([htmlSource], { type: "text/html;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "assistente_completo_salvo.html";
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+      showToast("HTML gerado com todas as informações e vídeos dentro!");
+    });
+
+    // Exportar / Importar JSON
     document.getElementById("btnExportData").addEventListener("click", () => {
-      const blob = new Blob([JSON.stringify({ qaDatabase, appConfig }, null, 2)], { type: "application/json" });
+      const blob = new Blob(
+        [JSON.stringify({ qaDatabase, videoLibrary, chatHistory, appConfig }, null, 2)],
+        { type: "application/json" }
+      );
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
@@ -1408,12 +1723,16 @@
       reader.onload = () => {
         try {
           const parsed = JSON.parse(reader.result);
-          if (Array.isArray(parsed.qaDatabase)) {
-            qaDatabase = parsed.qaDatabase;
-            localStorage.setItem(STORAGE_KEY_QA, JSON.stringify(qaDatabase));
-            renderQaList();
-            showToast("Backup importado!");
-          }
+          if (Array.isArray(parsed.qaDatabase)) qaDatabase = parsed.qaDatabase;
+          if (Array.isArray(parsed.videoLibrary)) videoLibrary = parsed.videoLibrary;
+          if (Array.isArray(parsed.chatHistory)) chatHistory = parsed.chatHistory;
+          if (parsed.appConfig) appConfig = Object.assign({}, DEFAULT_CONFIG, parsed.appConfig);
+          persistAllLocal();
+          refreshVideoSelect();
+          renderQaList();
+          renderVideoLibrary();
+          renderChat();
+          showToast("Backup importado!");
         } catch {
           showToast("Arquivo inválido.");
         }
@@ -1421,8 +1740,10 @@
       reader.readAsText(file);
     });
 
+    refreshVideoSelect();
     renderChat();
     renderQaList();
+    renderVideoLibrary();
   </script>
 </body>
 </html>
