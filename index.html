@@ -1,1408 +1,1464 @@
 <!DOCTYPE html>
-<html lang="pt-PT">
+<html lang="pt">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>O Estrategista - Episódio 10 (Edição Cinematográfica)</title>
+<title>O Estrategista — Livro Interativo</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Lora:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+
 <style>
-  * {
+:root {
+    --bg-dark: #0b0e14;
+    --panel-bg: #141923;
+    --book-page: #f4ebd8;
+    --book-ink: #29221c;
+    --gold: #d4af37;
+    --gold-soft: rgba(212, 175, 55, 0.25);
+    --text-light: #e2e8f0;
+    --text-muted: #94a3b8;
+    --accent-green: #10b981;
+    --accent-red: #ef4444;
+    --accent-purple: #8b5cf6;
+}
+
+* {
     box-sizing: border-box;
+}
+
+body {
     margin: 0;
-    padding: 0;
-  }
-  body {
-    background-color: #09090b;
-    color: #f4f4f5;
-    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background: radial-gradient(circle at top, #182030 0%, var(--bg-dark) 100%);
+    color: var(--text-light);
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    padding-bottom: 40px;
+}
+
+/* CABEÇALHO */
+header {
+    padding: 24px 16px;
+    text-align: center;
+    background: rgba(15, 20, 30, 0.85);
+    border-bottom: 1px solid var(--gold-soft);
+    backdrop-filter: blur(8px);
+}
+
+header h1 {
+    margin: 0;
+    font-family: 'Cinzel', serif;
+    font-size: 28px;
+    letter-spacing: 3px;
+    color: var(--gold);
+    text-shadow: 0 2px 10px rgba(212, 175, 55, 0.3);
+}
+
+header p {
+    color: var(--text-muted);
+    font-family: 'Lora', serif;
+    font-style: italic;
+    font-size: 15px;
+    margin: 6px 0 0;
+}
+
+/* CONTENTOR PRINCIPAL */
+.container {
+    width: 100%;
+    max-width: 1280px;
+    margin: 24px auto;
+    padding: 0 20px;
     display: flex;
     flex-direction: column;
+    gap: 24px;
+}
+
+/* BARRA DE ESTADO SUPERIOR */
+.status-bar {
+    display: flex;
+    justify-content: space-between;
     align-items: center;
-    justify-content: center;
-    min-height: 100vh;
-    padding: 16px;
-  }
-  header {
-    text-align: center;
-    margin-bottom: 12px;
-  }
-  header h1 {
-    font-size: 1.35rem;
-    letter-spacing: 2.5px;
-    text-transform: uppercase;
-    color: #ffffff;
-  }
-  header p {
-    font-size: 0.85rem;
-    color: #a1a1aa;
-    margin-top: 4px;
-  }
-  #stage-container {
-    position: relative;
-    width: 100%;
-    max-width: 1024px;
-    border: 2px solid #27272a;
+    flex-wrap: wrap;
+    gap: 12px;
+    background: var(--panel-bg);
+    padding: 14px 20px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+.badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: var(--text-muted);
+}
+
+.badge strong {
+    color: var(--text-light);
+}
+
+#peopleCount {
+    background: rgba(16, 185, 129, 0.15);
+    color: #34d399;
+    padding: 2px 10px;
+    border-radius: 20px;
+    font-weight: bold;
+    border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.quick-jump {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+select {
+    background: #1e2636;
+    color: var(--text-light);
+    border: 1px solid var(--gold-soft);
+    padding: 8px 12px;
     border-radius: 8px;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    cursor: pointer;
+    outline: none;
+}
+
+select:focus {
+    border-color: var(--gold);
+}
+
+/* ÁREA DE ADICIONAR HISTÓRIA ENORME */
+.story-editor-box {
+    display: none;
+    background: var(--panel-bg);
+    border: 2px solid var(--gold);
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.6);
+    animation: fadeIn 0.25s ease;
+}
+
+.story-editor-box.open {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.editor-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 14px;
+}
+
+.editor-header h2 {
+    margin: 0;
+    font-family: 'Cinzel', serif;
+    font-size: 20px;
+    color: var(--gold);
+}
+
+.editor-help {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.5;
+    margin-bottom: 14px;
+    background: rgba(255, 255, 255, 0.03);
+    padding: 12px 14px;
+    border-radius: 10px;
+    border-left: 3px solid var(--gold);
+}
+
+textarea#hugeStoryInput {
+    width: 100%;
+    min-height: 320px;
+    max-height: 600px;
+    padding: 16px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    background: #0d121b;
+    color: #f8fafc;
+    font-family: 'Lora', serif;
+    font-size: 15px;
+    line-height: 1.65;
+    resize: vertical;
+    outline: none;
+}
+
+textarea#hugeStoryInput:focus {
+    border-color: var(--gold);
+}
+
+.editor-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 16px;
+}
+
+/* ÁREA PRINCIPAL: PALCO + LIVRO */
+.main-stage {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 24px;
+    align-items: stretch;
+}
+
+@media (max-width: 960px) {
+    .main-stage {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* PALCO DA ANIMAÇÃO */
+.canvas-wrapper {
+    position: relative;
+    border-radius: 16px;
     overflow: hidden;
-    background: #ffffff;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.9);
-  }
-  canvas {
+    border: 2px solid var(--gold-soft);
+    background: #0f1520;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
+}
+
+canvas {
     display: block;
     width: 100%;
     height: auto;
     aspect-ratio: 16 / 9;
-  }
-  #scene-badge {
-    position: absolute;
-    top: 14px;
-    left: 16px;
-    background: rgba(9, 9, 11, 0.88);
-    color: #fff;
-    padding: 6px 14px;
-    font-size: 0.78rem;
-    font-weight: 700;
-    letter-spacing: 1.2px;
-    border-radius: 4px;
-    border: 1px solid #3f3f46;
-    text-transform: uppercase;
-  }
-  #shot-badge {
-    position: absolute;
-    top: 14px;
-    right: 16px;
-    background: rgba(255, 255, 255, 0.9);
-    color: #09090b;
-    padding: 5px 10px;
-    font-size: 0.72rem;
-    font-weight: 800;
-    letter-spacing: 1px;
-    border-radius: 4px;
-    text-transform: uppercase;
-  }
-  #subtitle-box {
-    width: 100%;
-    max-width: 1024px;
-    background: #121215;
-    border: 1px solid #27272a;
-    border-top: none;
-    padding: 18px 24px;
-    min-height: 100px;
+}
+
+/* BARRA DE CONTROLOS */
+.controls-panel {
+    background: #131822;
+    padding: 16px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    font-size: 1.08rem;
-    line-height: 1.55;
-    color: #f4f4f5;
-  }
-  #speaker-label {
-    font-size: 0.78rem;
-    font-weight: 800;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    color: #a1a1aa;
-    margin-bottom: 5px;
-  }
-  #controls {
-    width: 100%;
-    max-width: 1024px;
-    background: #18181b;
-    border: 1px solid #27272a;
-    border-radius: 0 0 8px 8px;
-    padding: 12px 18px;
+    gap: 14px;
+}
+
+.btn-group {
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
-    align-items: center;
-    justify-content: space-between;
-  }
-  .btn-group {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-  }
-  button {
-    background: #27272a;
-    color: #fff;
-    border: 1px solid #3f3f46;
-    padding: 8px 14px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 0.85rem;
+}
+
+button {
+    flex: 1;
+    min-width: 105px;
+    padding: 12px 14px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    background: #232d42;
+    color: white;
     font-weight: 600;
-    transition: all 0.2s;
-  }
-  button:hover {
-    background: #3f3f46;
-  }
-  button.primary {
-    background: #ffffff;
-    color: #09090b;
-    border-color: #ffffff;
-  }
-  button.primary:hover {
-    background: #e4e4e7;
-  }
-  select {
-    background: #27272a;
-    color: #fff;
-    border: 1px solid #3f3f46;
-    padding: 7px 10px;
-    border-radius: 5px;
-    font-size: 0.85rem;
-  }
-  #progress-bar-container {
-    width: 100%;
-    max-width: 1024px;
-    height: 5px;
-    background: #27272a;
-  }
-  #progress-bar {
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+button:hover {
+    background: #31405e;
+    transform: translateY(-1px);
+}
+
+button:active {
+    transform: translateY(0);
+}
+
+button.primary {
+    background: linear-gradient(135deg, #059669, #10b981);
+    border: none;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+button.primary:hover {
+    background: linear-gradient(135deg, #047857, #059669);
+}
+
+button.story-btn {
+    background: linear-gradient(135deg, #7c3aed, #8b5cf6);
+    border: none;
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+}
+
+button.story-btn:hover {
+    background: linear-gradient(135deg, #6d28d9, #7c3aed);
+}
+
+button.gold-btn {
+    background: linear-gradient(135deg, #b45309, #d4af37);
+    color: #111827;
+    border: none;
+    font-weight: 700;
+}
+
+button.danger {
+    background: rgba(239, 68, 68, 0.18);
+    border-color: rgba(239, 68, 68, 0.4);
+    color: #fca5a5;
+}
+
+button.danger:hover {
+    background: rgba(239, 68, 68, 0.3);
+}
+
+/* VELOCIDADE E VOZ */
+.settings-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    font-size: 13px;
+    color: var(--text-muted);
+}
+
+.speed-control {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+input[type="range"] {
+    accent-color: var(--gold);
+    cursor: pointer;
+}
+
+/* O LIVRO DA HISTÓRIA */
+.book-container {
+    background: var(--book-page);
+    color: var(--book-ink);
+    border-radius: 16px;
+    padding: 28px 30px;
+    box-shadow:
+        inset 12px 0 24px rgba(0, 0, 0, 0.12),
+        0 15px 35px rgba(0, 0, 0, 0.5);
+    border: 3px solid #5c4328;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.book-header {
+    border-bottom: 2px solid rgba(92, 67, 40, 0.25);
+    padding-bottom: 12px;
+    margin-bottom: 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+}
+
+.book-chapter {
+    font-family: 'Cinzel', serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: #7c5832;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.page-number {
+    font-family: 'Lora', serif;
+    font-size: 13px;
+    color: #7c5832;
+    font-style: italic;
+    white-space: nowrap;
+}
+
+#currentSpeaker {
+    font-family: 'Cinzel', serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: #8b261d;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+#currentText {
+    font-family: 'Lora', serif;
+    font-size: 18px;
+    line-height: 1.75;
+    color: #1f1914;
+    min-height: 160px;
+    margin-bottom: 24px;
+}
+
+.book-footer {
+    margin-top: auto;
+}
+
+.progress-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: #6b533b;
+    margin-bottom: 6px;
+    font-weight: 600;
+}
+
+.progress-area {
+    background: rgba(92, 67, 40, 0.2);
+    height: 8px;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+#progress {
     width: 0%;
     height: 100%;
-    background: #ffffff;
+    background: linear-gradient(90deg, #8b261d, #d4af37);
     transition: width 0.3s ease;
-  }
+}
+
+.note {
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 12px;
+    margin-top: 8px;
+}
 </style>
 </head>
+
 <body>
 
 <header>
-  <h1>O Estrategista: O Escravo que Conquistou o Mundo</h1>
-  <p>Episódio 10 — O Deus da Guerra Não Pede Permissão à Morte</p>
+    <h1>O ESTRATEGISTA</h1>
+    <p>O Escravo que Conquistou o Mundo — Livro Interativo & Avaliador de Histórias</p>
 </header>
 
-<div id="stage-container">
-  <div id="scene-badge">PRONTO PARA INICIAR</div>
-  <div id="shot-badge">MODO CINEMA</div>
-  <canvas id="canvas" width="1024" height="576"></canvas>
-</div>
+<div class="container">
 
-<div id="progress-bar-container">
-  <div id="progress-bar"></div>
-</div>
+    <!-- BARRA DE INFORMAÇÕES E NAVEGAÇÃO RÁPIDA -->
+    <div class="status-bar">
+        <div class="badge">
+            <span>Capítulo:</span>
+            <strong id="sceneNumber">1</strong> — <strong id="sceneName">Depois da batalha</strong>
+        </div>
 
-<div id="subtitle-box">
-  <div id="speaker-label">SISTEMA</div>
-  <div id="subtitle-text">Clique em "▶ Iniciar História com Áudio" para ver os diálogos em close-up, exércitos em marcha e combates detalhados.</div>
-</div>
+        <div class="badge">
+            <span>Em cena:</span>
+            <span id="peopleCount">0</span> pessoas
+        </div>
 
-<div id="controls">
-  <div class="btn-group">
-    <button id="btn-play" class="primary" onclick="startStory()">▶ Iniciar História com Áudio</button>
-    <button id="btn-pause" onclick="togglePause()">⏸ Pausar</button>
-    <button onclick="prevScene()">⏮ Anterior</button>
-    <button onclick="nextScene()">⏭ Próxima</button>
-  </div>
-  <div class="btn-group">
-    <select id="scene-select" onchange="jumpToScene(this.value)"></select>
-    <select id="speed-select" onchange="updateSpeed(this.value)">
-      <option value="1">Velocidade: 1.0x</option>
-      <option value="1.2">Velocidade: 1.2x</option>
-      <option value="1.45">Velocidade: 1.45x</option>
-    </select>
-  </div>
+        <div class="quick-jump">
+            <label for="sceneSelect" style="font-size: 13px; color: var(--text-muted);">Ir para cena:</label>
+            <select id="sceneSelect" onchange="jumpToScene(this.value)"></select>
+        </div>
+    </div>
+
+    <!-- EDITOR ENORME PARA ADICIONAR HISTÓRIA -->
+    <section id="storyEditorBox" class="story-editor-box">
+        <div class="editor-header">
+            <h2>📚 ADICIONAR / AVALIAR HISTÓRIA ENORME</h2>
+            <button onclick="toggleStoryEditor()" style="flex: 0; min-width: auto; padding: 8px 14px;">✕ Fechar</button>
+        </div>
+
+        <div class="editor-help">
+            <strong>Como funciona:</strong> Cola aqui um texto enorme (vários parágrafos ou linhas). O avaliador vai ler tudo, identificar quem está a falar (ex.: <code>Lorian: Olá a todos!</code>, <code>Mira: Precisamos avançar.</code> ou qualquer nome novo), criar/atualizar a etiqueta em cima da cabeça do protagonista, escolher uma das paisagens existentes automaticamente e colocar todas as novas falas no livro e nos balões!
+        </div>
+
+        <textarea id="hugeStoryInput" placeholder="Cola aqui o teu texto enorme...&#10;&#10;Exemplo:&#10;Lorian: A tempestade aproxima-se do castelo e não temos muito tempo.&#10;Mira: Os arqueiros já estão nos muros, senhor.&#10;Ronan: E se o inimigo atacar de noite pela ponte?&#10;Lorian: Então vamos surpreendê-los antes do amanhecer."></textarea>
+
+        <div class="editor-actions">
+            <button class="gold-btn" onclick="applyHugeStory()">✨ AVALIAR E APLICAR AO LIVRO</button>
+            <button onclick="fillHugeSample()">⚡ PREENCHER EXEMPLO ENORME</button>
+            <button class="danger" onclick="clearHugeInput()">🗑 LIMPAR TEXTO</button>
+        </div>
+    </section>
+
+    <!-- ÁREA PRINCIPAL: ANIMAÇÃO + LIVRO -->
+    <div class="main-stage">
+
+        <!-- PALCO VISUAL -->
+        <div class="canvas-wrapper">
+            <canvas id="screen" width="960" height="540"></canvas>
+
+            <div class="controls-panel">
+                <div class="btn-group">
+                    <button class="primary" onclick="startStory()">▶ INICIAR</button>
+                    <button onclick="pauseStory()">Ⅱ PAUSAR</button>
+                    <button onclick="resumeStory()">▶ CONTINUAR</button>
+                    <button onclick="prevSegment()">⏮ ANTERIOR</button>
+                    <button onclick="skipNext()">⏭ PRÓXIMO</button>
+                    <button class="story-btn" onclick="toggleStoryEditor()">➕ ADICIONA HISTÓRIA</button>
+                    <button class="danger" onclick="restartStory()">↻ REINICIAR</button>
+                </div>
+
+                <div class="settings-row">
+                    <div class="speed-control">
+                        <label for="speedRange">⚡ Velocidade:</label>
+                        <input type="range" id="speedRange" min="0.8" max="2.0" step="0.1" value="1.1" oninput="updateSpeed(this.value)">
+                        <strong id="speedLabel" style="color: var(--gold);">1.1x</strong>
+                    </div>
+
+                    <label style="cursor: pointer; display: flex; align-items: center; gap: 6px;">
+                        <input type="checkbox" id="voiceToggle" checked>
+                        🔊 Narração por Voz Ativa
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- LIVRO DA HISTÓRIA -->
+        <div class="book-container">
+            <div>
+                <div class="book-header">
+                    <span class="book-chapter" id="bookChapterTitle">Capítulo 1</span>
+                    <span class="page-number" id="pageIndicator">Página 1 / 32</span>
+                </div>
+
+                <div id="currentSpeaker">📜 NARRADOR</div>
+
+                <div id="currentText">
+                    O livro está aberto. Carrega em <strong>INICIAR</strong> para dar vida às imagens ou em <strong>➕ ADICIONA HISTÓRIA</strong> para colar um texto enorme e atualizar os protagonistas.
+                </div>
+            </div>
+
+            <div class="book-footer">
+                <div class="progress-label">
+                    <span>Progresso da História</span>
+                    <span id="progressPercent">0%</span>
+                </div>
+                <div class="progress-area">
+                    <div id="progress"></div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <p class="note">
+        Clica em <strong>➕ ADICIONA HISTÓRIA</strong> sempre que quiseres colar um texto gigante para atualizar as falas, etiquetas e protagonistas na hora.
+    </p>
+
 </div>
 
 <script>
-const canvas = document.getElementById('canvas');
-const ctx = canvas.getContext('2d');
-const subtitleText = document.getElementById('subtitle-text');
-const speakerLabel = document.getElementById('speaker-label');
-const sceneBadge = document.getElementById('scene-badge');
-const shotBadge = document.getElementById('shot-badge');
-const progressBar = document.getElementById('progress-bar');
-const sceneSelect = document.getElementById('scene-select');
+/* =====================================================
+   CONFIGURAÇÃO GERAL E ESTADO
+===================================================== */
 
-let currentBeatIndex = 0;
-let isPlaying = false;
-let isPaused = false;
-let isSpeaking = false;
-let speechRate = 1.0;
-let frameCount = 0;
-let beatStartTime = 0;
+const canvas = document.getElementById("screen");
+const ctx = canvas.getContext("2d");
 
-// Perfis visuais detalhados de cada personagem
-const CHAR_PROFILES = {
-  lorian: {
-    name: "Lorian",
-    role: "Estrategista",
-    cape: true,
-    armor: "light",
-    hair: "medium",
-    beard: false,
-    scar: false,
-    hood: false,
-    crown: false,
-    whiteArmor: false,
-    weapon: "sword"
-  },
-  ronan: {
-    name: "Ronan",
-    role: "Comandante",
-    cape: false,
-    armor: "heavy",
-    hair: "short",
-    beard: true,
-    scar: true,
-    hood: false,
-    crown: false,
-    whiteArmor: false,
-    weapon: "broad_sword"
-  },
-  mira: {
-    name: "Mira",
-    role: "Batedora",
-    cape: true,
-    armor: "scout",
-    hair: "ponytail",
-    beard: false,
-    scar: false,
-    hood: true,
-    crown: false,
-    whiteArmor: false,
-    weapon: "bow"
-  },
-  seran: {
-    name: "Seran",
-    role: "Veterano",
-    cape: false,
-    armor: "veteran",
-    hair: "gray_short",
-    beard: true,
-    scar: true,
-    hood: false,
-    crown: false,
-    whiteArmor: false,
-    weapon: "spear"
-  },
-  aldric: {
-    name: "Aldric",
-    role: "Armadura Branca",
-    cape: true,
-    armor: "white",
-    hair: "long_gray",
-    beard: true,
-    scar: true,
-    hood: false,
-    crown: false,
-    whiteArmor: true,
-    weapon: "sword"
-  },
-  edric: {
-    name: "Rei Edric",
-    role: "Rei do Império",
-    cape: true,
-    armor: "royal",
-    hair: "short",
-    beard: true,
-    scar: false,
-    hood: false,
-    crown: true,
-    whiteArmor: false,
-    weapon: "none"
-  },
-  darius: {
-    name: "General Darius",
-    role: "General Imperial",
-    cape: true,
-    armor: "imperial",
-    hair: "helmet",
-    beard: false,
-    scar: false,
-    hood: false,
-    crown: false,
-    whiteArmor: false,
-    weapon: "sword"
-  },
-  soldier: {
-    name: "",
-    role: "Soldado",
-    cape: false,
-    armor: "light",
-    hair: "helmet_open",
-    beard: false,
-    scar: false,
-    hood: false,
-    crown: false,
-    whiteArmor: false,
-    weapon: "spear"
-  },
-  imperial: {
-    name: "",
-    role: "Imperial",
-    cape: false,
-    armor: "imperial",
-    hair: "helmet",
-    beard: false,
-    scar: false,
-    hood: false,
-    crown: false,
-    whiteArmor: false,
-    weapon: "sword"
-  }
-};
+const W = canvas.width;
+const H = canvas.height;
 
-// Roteiro sincronizado: cada passo (beat) define o plano de câmara (wide vs dialogue), cenário, personagens e texto
-const storyBeats = [
-  {
-    chapter: "PRÓLOGO: A FIGURA NO HORIZONTE",
-    shot: "wide",
-    env: "hills",
-    speaker: "NARRADOR",
-    text: "A batalha tinha terminado, mas Lorian não comemorava. No topo da colina distante, um homem vestido com a armadura branca de Aldric observava o vale.",
-    setup: (s) => {
-      s.entities = [
-        spawn("lorian", 220, 440, "right", "walk", 300),
-        spawn("ronan", 160, 440, "right", "walk", 240),
-        spawn("mira", 110, 440, "right", "walk", 190),
-        spawn("aldric", 820, 355, "left", "idle", 880)
-      ];
-    },
-    update: (s, t) => {
-      if (t > 4.5) {
-        s.entities[3].action = "walk";
-        s.entities[3].dir = "right";
-      }
+let running = false;
+let paused = false;
+let currentIndex = 0;
+let speechToken = 0;
+let speechRate = 1.1;
+
+let currentSegment = null;
+let speechTimer = null;
+let availableVoices = [];
+
+function loadVoices() {
+    if ("speechSynthesis" in window) {
+        availableVoices = window.speechSynthesis.getVoices();
     }
-  },
-  {
-    chapter: "PRÓLOGO: A FIGURA NO HORIZONTE",
-    shot: "dialogue",
-    env: "hills",
-    leftChar: "lorian",
-    rightChar: "ronan",
-    activeSpeaker: "left",
-    speaker: "LORIAN & RONAN",
-    text: "Não é o meu pai, disse Lorian. O meu pai nunca se apresentaria diante de um exército sem conhecer todas as saídas. Temos uma armadilha à nossa frente.",
-    setup: (s) => {},
-    update: (s, t) => {}
-  },
-  {
-    chapter: "1. A ARMADILHA POR TRÁS DA VITÓRIA",
-    shot: "wide",
-    env: "war_tent",
-    speaker: "NARRADOR",
-    text: "Naquela noite, Lorian reuniu os seus comandantes na tenda de guerra. Sobre a mesa estavam mapas, relatórios e a carta que mencionava Aldric.",
-    setup: (s) => {
-      s.entities = [
-        spawn("mira", 310, 440, "right", "idle", 310),
-        spawn("lorian", 390, 440, "right", "point", 390),
-        spawn("ronan", 590, 440, "left", "idle", 590),
-        spawn("seran", 670, 440, "left", "idle", 670)
-      ];
-    },
-    update: (s, t) => {}
-  },
-  {
-    chapter: "1. A ARMADILHA POR TRÁS DA VITÓRIA",
-    shot: "dialogue",
-    env: "war_tent",
-    leftChar: "lorian",
-    rightChar: "mira",
-    activeSpeaker: "both",
-    speaker: "MIRA & LORIAN",
-    text: "Estão a tentar obrigar-nos a escolher entre perder o exército ou abandonar Aldric, percebeu Mira. E é por isso que não vamos escolher nenhum dos dois, respondeu Lorian.",
-    setup: (s) => {},
-    update: (s, t) => {}
-  },
-  {
-    chapter: "2. QUEM ESTÁ DISPOSTO A MORRER?",
-    shot: "wide",
-    env: "camp_rock",
-    speaker: "NARRADOR",
-    text: "Ao amanhecer, Lorian subiu sobre uma grande pedra diante dos sobreviventes de Valdoria e dos veteranos de Aldric.",
-    setup: (s) => {
-      s.entities = [
-        spawn("lorian", 210, 385, "right", "speech", 210),
-        spawn("ronan", 380, 440, "left", "idle", 330),
-        spawn("seran", 445, 440, "left", "idle", 395),
-        spawn("mira", 510, 440, "left", "idle", 460)
-      ];
-      for (let i = 0; i < 8; i++) {
-        s.entities.push(spawn("soldier", 580 + i * 42, 440, "left", "idle", 530 + i * 42));
-      }
-    },
-    update: (s, t) => {
-      if (t > 3.5) {
-        for (let i = 1; i < s.entities.length; i++) {
-          s.entities[i].action = "walk";
-        }
-      }
-    }
-  },
-  {
-    chapter: "2. QUEM ESTÁ DISPOSTO A MORRER?",
-    shot: "dialogue",
-    env: "camp_rock",
-    leftChar: "lorian",
-    rightChar: "seran",
-    activeSpeaker: "left",
-    speaker: "LORIAN",
-    text: "Não quero homens ansiosos por morrer. Quero homens que saibam pelo que estão a lutar. A vossa morte nunca será usada para esconder os erros de quem vos comandou.",
-    setup: (s) => {},
-    update: (s, t) => {}
-  },
-  {
-    chapter: "3. O RECRUTAMENTO DOS IMPOSSÍVEIS",
-    shot: "wide",
-    env: "forest_march",
-    speaker: "NARRADOR",
-    text: "Lorian enviou mensageiros por Caio. Das florestas e montanhas surgiram arqueiros da fronteira, engenheiros de fortalezas e guerreiros sem senhor.",
-    setup: (s) => {
-      s.entities = [
-        spawn("lorian", 760, 440, "left", "idle", 760),
-        spawn("ronan", 830, 440, "left", "idle", 830)
-      ];
-      for (let i = 0; i < 8; i++) {
-        const type = i % 2 === 0 ? "mira" : "soldier";
-        const ent = spawn(type, 30 + i * 65, 440, "right", "march", 320 + i * 45);
-        if (type === "mira") ent.customName = "";
-        s.entities.push(ent);
-      }
-    },
-    update: (s, t) => {}
-  },
-  {
-    chapter: "4. O SACRIFÍCIO DA PONTE",
-    shot: "wide",
-    env: "bridge",
-    speaker: "NARRADOR",
-    text: "Três dias depois, a coluna imperial avançou pela ponte de pedra. Lorian deu o sinal. Seran e os veteranos seguraram a linha enquanto os engenheiros destruíam os pilares.",
-    setup: (s) => {
-      s.bridgeBroken = false;
-      s.entities = [
-        spawn("lorian", 110, 440, "right", "point", 110),
-        spawn("ronan", 180, 440, "right", "idle", 180),
-        spawn("seran", 560, 415, "right", "fight", 560),
-        spawn("soldier", 595, 415, "right", "fight", 595)
-      ];
-      for (let i = 0; i < 7; i++) {
-        s.entities.push(spawn("imperial", 660 + i * 40, 415, "left", "fight", 620 + i * 32));
-      }
-    },
-    update: (s, t) => {
-      if (t > 5.0) {
-        s.bridgeBroken = true;
-      }
-    }
-  },
-  {
-    chapter: "4. O SACRIFÍCIO DA PONTE",
-    shot: "dialogue",
-    env: "bridge",
-    leftChar: "ronan",
-    rightChar: "lorian",
-    activeSpeaker: "both",
-    speaker: "RONAN & LORIAN",
-    text: "A posição foi mantida, então vencemos, disse Ronan. Lorian olhou para o desfiladeiro e respondeu: Não. Apenas sobrevivemos a uma parte do plano.",
-    setup: (s) => {},
-    update: (s, t) => {}
-  },
-  {
-    chapter: "5. O REI COMEÇA A COMPREENDER",
-    shot: "dialogue",
-    env: "imperial_tent",
-    leftChar: "edric",
-    rightChar: "darius",
-    activeSpeaker: "left",
-    speaker: "REI EDRIC",
-    text: "Ele não está a construir um exército, Darius. Está a construir uma resposta para cada fraqueza do nosso. Quero os relatórios completos, sem filtros.",
-    setup: (s) => {},
-    update: (s, t) => {}
-  },
-  {
-    chapter: "6. O DEUS DA GUERRA",
-    shot: "wide",
-    env: "night_battle",
-    speaker: "NARRADOR",
-    text: "Ao anoitecer, o império atacou em três frentes. Lorian lançou a emboscada: flechas dos arqueiros e cavalaria isolaram as linhas inimigas até ao amanhecer.",
-    setup: (s) => {
-      s.entities = [
-        spawn("lorian", 380, 440, "right", "fight", 480),
-        spawn("mira", 290, 440, "right", "fight", 390),
-        spawn("ronan", 330, 440, "right", "fight", 430)
-      ];
-      for (let i = 0; i < 5; i++) {
-        s.entities.push(spawn("soldier", 110 + i * 38, 440, "right", "fight", 280 + i * 38));
-      }
-      for (let i = 0; i < 7; i++) {
-        s.entities.push(spawn("imperial", 560 + i * 44, 440, "left", "fight", 560 + i * 44));
-      }
-    },
-    update: (s, t) => {
-      if (t > 5.5) {
-        s.entities.forEach(e => {
-          if (e.profileKey === "imperial") {
-            e.dir = "right";
-            e.action = "flee";
-            e.targetX = 1100;
-          } else {
-            e.action = "celebrate";
-          }
-        });
-      }
-    }
-  },
-  {
-    chapter: "7. A PRISÃO VAZIA",
-    shot: "dialogue",
-    env: "war_tent",
-    leftChar: "mira",
-    rightChar: "lorian",
-    activeSpeaker: "left",
-    speaker: "MIRA",
-    text: "Lorian, tens de ver este mapa imperial. A prisão subterrânea estava vazia. Aldric foi transferido três dias antes da primeira batalha começar.",
-    setup: (s) => {},
-    update: (s, t) => {}
-  },
-  {
-    chapter: "8. O HOMEM QUE ESTAVA À ESPERA",
-    shot: "wide",
-    env: "tower_interior",
-    speaker: "NARRADOR",
-    text: "Seguindo coordenadas secretas até uma antiga torre de observação iluminada por uma lamparina, Lorian encontrou um homem sentado de costas.",
-    setup: (s) => {
-      s.entities = [
-        spawn("lorian", 210, 440, "right", "walk", 410),
-        spawn("aldric", 610, 440, "left", "idle", 610)
-      ];
-    },
-    update: (s, t) => {}
-  },
-  {
-    chapter: "8. O HOMEM QUE ESTAVA À ESPERA",
-    shot: "dialogue",
-    env: "tower_interior",
-    leftChar: "lorian",
-    rightChar: "aldric",
-    activeSpeaker: "right",
-    speaker: "ALDRIC",
-    text: "Esta guerra foi criada para descobrir se eras capaz de comandar o império inteiro. Olha para a assinatura da ordem original: foi escrita por ti, anos antes de nasceres.",
-    setup: (s) => {},
-    update: (s, t) => {}
-  }
+}
+loadVoices();
+if ("speechSynthesis" in window && window.speechSynthesis.onvoiceschanged !== undefined) {
+    window.speechSynthesis.onvoiceschanged = loadVoices;
+}
+
+const palettePool = [
+    { color: "#e2e8f0", cape: "#991b1b" },
+    { color: "#f472b6", cape: "#831843" },
+    { color: "#60a5fa", cape: "#1e3a8a" },
+    { color: "#fbbf24", cape: "#78350f" },
+    { color: "#34d399", cape: "#065f46" },
+    { color: "#c084fc", cape: "#4c1d95" },
+    { color: "#fb923c", cape: "#7c2d12" }
 ];
 
-let worldState = {
-  entities: [],
-  bridgeBroken: false
+const characters = {
+    Lorian: {
+        x: 250, y: 395, color: "#e2e8f0", cape: "#991b1b",
+        visible: true, action: "idle", targetX: 250, phase: 0
+    },
+    Mira: {
+        x: 450, y: 395, color: "#f472b6", cape: "#831843",
+        visible: true, action: "idle", targetX: 450, phase: 1
+    },
+    Ronan: {
+        x: 650, y: 395, color: "#60a5fa", cape: "#1e3a8a",
+        visible: true, action: "idle", targetX: 650, phase: 2
+    },
+    Seran: {
+        x: 760, y: 395, color: "#fbbf24", cape: "#78350f",
+        visible: false, action: "idle", targetX: 760, phase: 3
+    },
+    Aldric: {
+        x: 500, y: 395, color: "#94a3b8", cape: "#334155",
+        visible: false, action: "idle", targetX: 500, phase: 4
+    },
+    Edric: {
+        x: 500, y: 395, color: "#facc15", cape: "#713f12",
+        visible: false, action: "idle", targetX: 500, phase: 5
+    }
 };
 
-// Popular seletor de capítulos sem duplicados
-const addedChapters = new Set();
-storyBeats.forEach((b, idx) => {
-  if (!addedChapters.has(b.chapter)) {
-    addedChapters.add(b.chapter);
-    const opt = document.createElement('option');
-    opt.value = idx;
-    opt.textContent = b.chapter;
-    sceneSelect.appendChild(opt);
-  }
-});
-
-function spawn(profileKey, x, y, dir, action, targetX) {
-  return {
-    profileKey,
-    customName: null,
-    x,
-    y,
-    dir,
-    action,
-    targetX,
-    walkCycle: Math.random() * 10
-  };
-}
-
-function loadBeat(index) {
-  currentBeatIndex = index;
-  const beat = storyBeats[index];
-
-  // Atualizar dropdown para o capítulo atual
-  for (let i = 0; i < sceneSelect.options.length; i++) {
-    if (sceneSelect.options[i].textContent === beat.chapter) {
-      sceneSelect.selectedIndex = i;
-      break;
+function ensureCharacter(name) {
+    if (!name || name === "Narrador") return;
+    if (!characters[name]) {
+        const idx = Object.keys(characters).length;
+        const pal = palettePool[idx % palettePool.length];
+        characters[name] = {
+            x: 200 + (idx % 4) * 180,
+            y: 395,
+            color: pal.color,
+            cape: pal.cape,
+            visible: true,
+            action: "idle",
+            targetX: 200 + (idx % 4) * 180,
+            phase: idx
+        };
     }
-  }
-
-  sceneBadge.textContent = beat.chapter;
-  shotBadge.textContent = beat.shot === "dialogue" ? "CLOSE-UP: DIÁLOGO" : "PLANO GERAL: AÇÃO";
-  speakerLabel.textContent = beat.speaker;
-  subtitleText.textContent = beat.text;
-  progressBar.style.width = `${((index + 1) / storyBeats.length) * 100}%`;
-  beatStartTime = performance.now();
-  beat.setup(worldState);
-
-  if (isPlaying && !isPaused) {
-    speakText(beat.text, () => {
-      if (isPlaying && !isPaused) {
-        if (currentBeatIndex < storyBeats.length - 1) {
-          setTimeout(() => loadBeat(currentBeatIndex + 1), 650);
-        } else {
-          isPlaying = false;
-          isSpeaking = false;
-          sceneBadge.textContent = "FIM DO EPISÓDIO 10";
-          document.getElementById('btn-play').textContent = "↻ Repetir História";
-        }
-      }
-    });
-  }
 }
 
-function speakText(text, onEndCallback) {
-  window.speechSynthesis.cancel();
-  const utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang = 'pt-PT';
-  utterance.rate = speechRate;
-  utterance.pitch = 0.95;
+let soldiers = [];
+let stars = [];
+let sceneBackground = "battle";
+let sceneTitle = "Depois da batalha";
+let sceneNumber = 1;
 
-  const voices = window.speechSynthesis.getVoices();
-  const ptVoice = voices.find(v => v.lang.includes('pt'));
-  if (ptVoice) utterance.voice = ptVoice;
+let clock = 0;
+let speakingCharacter = null;
+let speechBubble = "";
 
-  utterance.onstart = () => { isSpeaking = true; };
-  utterance.onend = () => {
-    isSpeaking = false;
-    if (onEndCallback) onEndCallback();
-  };
-  utterance.onerror = () => { isSpeaking = false; };
-  window.speechSynthesis.speak(utterance);
+for (let i = 0; i < 45; i++) {
+    stars.push({
+        x: Math.random() * W,
+        y: Math.random() * 260,
+        r: Math.random() * 1.8 + 0.5,
+        twinkle: Math.random() * 5
+    });
+}
+
+/* =====================================================
+   SOLDADOS E CENAS
+===================================================== */
+
+function createSoldiers(amount) {
+    soldiers = [];
+    for (let i = 0; i < amount; i++) {
+        soldiers.push({
+            x: 70 + (i % 12) * 72,
+            y: 445 + Math.floor(i / 12) * 26,
+            phase: Math.random() * 10,
+            color: "#64748b"
+        });
+    }
+}
+
+function setScene(scene, title, people) {
+    sceneBackground = scene;
+    sceneTitle = title;
+    sceneNumber = currentSegment ? currentSegment.sceneNumber : 1;
+
+    Object.keys(characters).forEach(name => {
+        characters[name].visible = false;
+        characters[name].action = "idle";
+    });
+
+    const baseX = [240, 420, 600, 760];
+    people.forEach((name, idx) => {
+        ensureCharacter(name);
+        if (characters[name]) {
+            characters[name].visible = true;
+            const posX = baseX[idx % baseX.length];
+            characters[name].x = posX;
+            characters[name].targetX = posX;
+        }
+    });
+
+    createSoldiers(currentSegment ? currentSegment.soldiers : 0);
+
+    document.getElementById("sceneNumber").textContent = sceneNumber;
+    document.getElementById("sceneName").textContent = title;
+    document.getElementById("bookChapterTitle").textContent = `Capítulo ${sceneNumber} — ${title}`;
+    document.getElementById("sceneSelect").value = getFirstIndexOfScene(sceneNumber);
+
+    updatePeopleCount();
+}
+
+function getFirstIndexOfScene(num) {
+    const idx = story.findIndex(s => s.sceneNumber === num);
+    return idx >= 0 ? idx : 0;
+}
+
+function updatePeopleCount() {
+    const protagonists = Object.values(characters).filter(c => c.visible).length;
+    document.getElementById("peopleCount").textContent = protagonists + soldiers.length;
+}
+
+function rebuildSceneDropdown() {
+    const select = document.getElementById("sceneSelect");
+    select.innerHTML = "";
+    const seen = new Set();
+
+    story.forEach((seg, idx) => {
+        if (!seen.has(seg.sceneNumber)) {
+            seen.add(seg.sceneNumber);
+            const opt = document.createElement("option");
+            opt.value = idx;
+            opt.textContent = `${seg.sceneNumber}. ${seg.title}`;
+            select.appendChild(opt);
+        }
+    });
+}
+
+/* =====================================================
+   DESENHO DO CENÁRIO E PERSONAGENS
+===================================================== */
+
+function drawBackground() {
+    let skyTop = "#1e293b", skyBottom = "#334155";
+    let groundTop = "#292f36", groundBottom = "#181c20";
+
+    if (sceneBackground === "castle") {
+        skyTop = "#172554"; skyBottom = "#3b82f6";
+        groundTop = "#3f3f46"; groundBottom = "#18181b";
+    } else if (sceneBackground === "night") {
+        skyTop = "#020617"; skyBottom = "#0f172a";
+        groundTop = "#14221d"; groundBottom = "#09100e";
+    } else if (sceneBackground === "tower") {
+        skyTop = "#090d16"; skyBottom = "#1e1b4b";
+        groundTop = "#27272a"; groundBottom = "#09090b";
+    } else if (sceneBackground === "bridge") {
+        skyTop = "#1e3a5f"; skyBottom = "#475569";
+        groundTop = "#29323c"; groundBottom = "#14191f";
+    } else if (sceneBackground === "map") {
+        skyTop = "#271c19"; skyBottom = "#452c1e";
+        groundTop = "#3a2618"; groundBottom = "#1f140c";
+    }
+
+    const skyGrad = ctx.createLinearGradient(0, 0, 0, 410);
+    skyGrad.addColorStop(0, skyTop);
+    skyGrad.addColorStop(1, skyBottom);
+    ctx.fillStyle = skyGrad;
+    ctx.fillRect(0, 0, W, H);
+
+    if (sceneBackground === "night" || sceneBackground === "tower") {
+        stars.forEach(st => {
+            const alpha = 0.4 + Math.sin(clock * 2 + st.twinkle) * 0.4;
+            ctx.fillStyle = `rgba(255, 255, 255, ${alpha})`;
+            ctx.beginPath();
+            ctx.arc(st.x, st.y, st.r, 0, Math.PI * 2);
+            ctx.fill();
+        });
+
+        ctx.fillStyle = "rgba(254, 240, 138, 0.12)";
+        ctx.beginPath();
+        ctx.arc(800, 95, 55, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = "#fef08a";
+        ctx.beginPath();
+        ctx.arc(800, 95, 32, 0, Math.PI * 2);
+        ctx.fill();
+    }
+
+    ctx.fillStyle = "rgba(15, 23, 42, 0.55)";
+    ctx.beginPath();
+    ctx.moveTo(0, 330);
+    ctx.lineTo(180, 160);
+    ctx.lineTo(350, 320);
+    ctx.lineTo(540, 175);
+    ctx.lineTo(740, 320);
+    ctx.lineTo(890, 185);
+    ctx.lineTo(960, 290);
+    ctx.lineTo(960, 420);
+    ctx.lineTo(0, 420);
+    ctx.fill();
+
+    const groundGrad = ctx.createLinearGradient(0, 405, 0, H);
+    groundGrad.addColorStop(0, groundTop);
+    groundGrad.addColorStop(1, groundBottom);
+    ctx.fillStyle = groundGrad;
+    ctx.fillRect(0, 405, W, 135);
+
+    ctx.strokeStyle = "rgba(212, 175, 55, 0.25)";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(0, 405);
+    ctx.lineTo(W, 405);
+    ctx.stroke();
+
+    if (sceneBackground === "castle") {
+        ctx.fillStyle = "#475569";
+        ctx.fillRect(650, 190, 180, 215);
+        ctx.fillRect(630, 160, 45, 245);
+        ctx.fillRect(805, 160, 45, 245);
+
+        ctx.fillStyle = "#fbbf24";
+        ctx.fillRect(725, 240, 25, 40);
+        ctx.fillRect(645, 200, 14, 24);
+        ctx.fillRect(820, 200, 14, 24);
+    }
+
+    if (sceneBackground === "tower") {
+        ctx.fillStyle = "#334155";
+        ctx.fillRect(380, 80, 190, 325);
+        ctx.fillStyle = "#f59e0b";
+        ctx.fillRect(455, 135, 40, 65);
+        ctx.fillStyle = "#64748b";
+        ctx.fillRect(360, 72, 230, 14);
+    }
+
+    if (sceneBackground === "bridge") {
+        ctx.fillStyle = "#78350f";
+        ctx.fillRect(0, 355, 960, 50);
+        ctx.fillStyle = "#451a03";
+        for (let x = 0; x < 960; x += 65) {
+            ctx.fillRect(x, 355, 8, 50);
+        }
+    }
+
+    if (sceneBackground === "map") {
+        ctx.fillStyle = "#d6b88d";
+        ctx.fillRect(310, 295, 340, 110);
+        ctx.strokeStyle = "#78350f";
+        ctx.lineWidth = 4;
+        ctx.strokeRect(310, 295, 340, 110);
+
+        ctx.strokeStyle = "#991b1b";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(340, 380);
+        ctx.lineTo(430, 325);
+        ctx.lineTo(510, 370);
+        ctx.lineTo(610, 315);
+        ctx.stroke();
+    }
+}
+
+function drawCharacter(name, c) {
+    if (!c.visible) return;
+
+    const x = c.x;
+    const y = c.y;
+
+    const moving = Math.abs(c.targetX - c.x) > 2;
+    const walking = moving || c.action === "run";
+
+    const bounce = walking
+        ? Math.sin(clock * 9 + c.phase) * 5
+        : Math.sin(clock * 2 + c.phase) * 2;
+
+    const headY = y - 105 + bounce;
+
+    if (speakingCharacter === name) {
+        ctx.fillStyle = "rgba(212, 175, 55, 0.22)";
+        ctx.beginPath();
+        ctx.ellipse(x, y + 2, 44, 12, 0, 0, Math.PI * 2);
+        ctx.fill();
+    }
+
+    ctx.fillStyle = "rgba(0,0,0,0.35)";
+    ctx.beginPath();
+    ctx.ellipse(x, y + 2, 28, 7, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = c.cape || "#1e293b";
+    ctx.beginPath();
+    ctx.moveTo(x - 14, y - 88 + bounce);
+    ctx.lineTo(x - 24 - Math.sin(clock * 4 + c.phase) * 4, y - 10);
+    ctx.lineTo(x + 24 + Math.sin(clock * 4 + c.phase) * 4, y - 10);
+    ctx.lineTo(x + 14, y - 88 + bounce);
+    ctx.fill();
+
+    ctx.strokeStyle = "#1e293b";
+    ctx.lineWidth = 9;
+    ctx.lineCap = "round";
+
+    const legMove = walking ? Math.sin(clock * 10 + c.phase) * 12 : 0;
+
+    ctx.beginPath();
+    ctx.moveTo(x - 7, y - 45);
+    ctx.lineTo(x - 10 + legMove, y);
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(x + 7, y - 45);
+    ctx.lineTo(x + 10 - legMove, y);
+    ctx.stroke();
+
+    ctx.fillStyle = c.color;
+    ctx.beginPath();
+    ctx.roundRect(x - 16, y - 90 + bounce, 32, 48, 6);
+    ctx.fill();
+
+    let armAngle = Math.sin(clock * 3 + c.phase) * 0.08;
+    if (c.action === "raise") armAngle = -1.2;
+    if (c.action === "attack") armAngle = -1.4;
+    if (c.action === "fall") armAngle = 1.1;
+
+    ctx.strokeStyle = c.color;
+    ctx.lineWidth = 8;
+
+    ctx.beginPath();
+    ctx.moveTo(x - 14, y - 80 + bounce);
+    ctx.lineTo(x - 29, y - 56 + armAngle * 12);
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(x + 14, y - 80 + bounce);
+    ctx.lineTo(x + 29, y - 56 - armAngle * 12);
+    ctx.stroke();
+
+    ctx.fillStyle = "#eab693";
+    ctx.beginPath();
+    ctx.arc(x, headY, 19, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = "#1e1b18";
+    ctx.beginPath();
+    ctx.arc(x, headY - 5, 19, Math.PI, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = "#111827";
+    ctx.fillRect(x - 7, headY - 2, 3, 3);
+    ctx.fillRect(x + 5, headY - 2, 3, 3);
+
+    // ETIQUETA COM O NOME POR CIMA DA CABEÇA
+    const labelWidth = Math.max(72, name.length * 9 + 20);
+    ctx.fillStyle = speakingCharacter === name ? "#8b261d" : "rgba(15, 23, 42, 0.92)";
+    ctx.beginPath();
+    ctx.roundRect(x - labelWidth / 2, headY - 54, labelWidth, 25, 7);
+    ctx.fill();
+
+    ctx.strokeStyle = speakingCharacter === name ? "#facc15" : c.color;
+    ctx.lineWidth = 1.6;
+    ctx.stroke();
+
+    ctx.fillStyle = "#ffffff";
+    ctx.font = "bold 13px Inter, sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText(name, x, headY - 37);
+}
+
+function drawSoldiers() {
+    soldiers.forEach(s => {
+        const bounce = Math.sin(clock * 3 + s.phase) * 2;
+        ctx.fillStyle = s.color;
+        ctx.fillRect(s.x - 7, s.y - 28 + bounce, 14, 27);
+
+        ctx.fillStyle = "#cbd5e1";
+        ctx.beginPath();
+        ctx.arc(s.x, s.y - 37 + bounce, 8, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.strokeStyle = "#94a3b8";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(s.x + 10, s.y + 8);
+        ctx.lineTo(s.x + 10, s.y - 52 + bounce);
+        ctx.stroke();
+    });
+}
+
+function drawSpeechBubble() {
+    if (!speechBubble || !speakingCharacter) return;
+
+    const c = characters[speakingCharacter];
+    if (!c || !c.visible) return;
+
+    const x = Math.max(195, Math.min(W - 195, c.x));
+    const y = c.y - 182;
+
+    const text = speechBubble.length > 56
+        ? speechBubble.substring(0, 53) + "..."
+        : speechBubble;
+
+    ctx.font = "600 14px Lora, serif";
+    const width = Math.min(360, ctx.measureText(text).width + 32);
+
+    ctx.fillStyle = "#f4ebd8";
+    ctx.beginPath();
+    ctx.roundRect(x - width / 2, y - 28, width, 38, 10);
+    ctx.fill();
+
+    ctx.strokeStyle = "#8b261d";
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    ctx.fillStyle = "#f4ebd8";
+    ctx.beginPath();
+    ctx.moveTo(c.x - 6, y + 10);
+    ctx.lineTo(c.x + 6, y + 10);
+    ctx.lineTo(c.x, y + 18);
+    ctx.fill();
+
+    ctx.fillStyle = "#1f1914";
+    ctx.textAlign = "center";
+    ctx.fillText(text, x, y - 4);
+}
+
+function updateCharacters() {
+    Object.keys(characters).forEach(name => {
+        const c = characters[name];
+        if (!c.visible) return;
+
+        const speed = c.action === "run" ? 5.5 : 2.5;
+        if (c.x < c.targetX) c.x = Math.min(c.x + speed, c.targetX);
+        else if (c.x > c.targetX) c.x = Math.max(c.x - speed, c.targetX);
+
+        if (c.action === "attack") {
+            c.targetX = Math.min(c.x + 45, 880);
+        }
+    });
+}
+
+function render() {
+    if (!paused) {
+        clock += 0.016;
+        updateCharacters();
+    }
+
+    ctx.clearRect(0, 0, W, H);
+    drawBackground();
+    drawSoldiers();
+
+    Object.keys(characters).forEach(name => {
+        drawCharacter(name, characters[name]);
+    });
+
+    drawSpeechBubble();
+    requestAnimationFrame(render);
+}
+
+render();
+
+/* =====================================================
+   MOVIMENTOS E ROTEIRO INICIAL
+===================================================== */
+
+function applyAction(segment) {
+    speakingCharacter = null;
+    speechBubble = "";
+
+    Object.keys(characters).forEach(name => {
+        if (characters[name].visible) {
+            characters[name].action = "idle";
+        }
+    });
+
+    if (segment.action) {
+        const c = characters[segment.action.actor];
+        if (c && c.visible) {
+            if (segment.action.type === "walk" || segment.action.type === "run") {
+                c.targetX = segment.action.x;
+            }
+            c.action = segment.action.type;
+        }
+    }
+
+    if (segment.speaker !== "Narrador") {
+        speakingCharacter = segment.speaker;
+        speechBubble = segment.text;
+    }
+}
+
+let story = [
+    { sceneNumber: 1, scene: "battle", title: "Depois da batalha", people: ["Lorian", "Mira", "Ronan"], soldiers: 8, speaker: "Narrador", text: "A batalha tinha terminado, mas Lorian não comemorava. Quinhentos homens tinham enfrentado um exército que deveria esmagá-los. Tinham vencido, mas a carta encontrada na caixa deixara uma pergunta sem resposta. Quem estava realmente a controlar aquela guerra?", action: {actor:"Lorian", type:"walk", x:350} },
+    { sceneNumber: 1, scene: "battle", title: "Depois da batalha", people: ["Lorian", "Mira", "Ronan"], soldiers: 8, speaker: "Lorian", text: "Isto não foi uma vitória normal. Alguém queria que estivéssemos exatamente aqui.", action: {actor:"Lorian", type:"raise"} },
+    { sceneNumber: 1, scene: "battle", title: "Depois da batalha", people: ["Lorian", "Mira", "Ronan"], soldiers: 8, speaker: "Ronan", text: "Queres dizer que fomos conduzidos até esta batalha?", action: {actor:"Ronan", type:"walk", x:390} },
+    { sceneNumber: 1, scene: "battle", title: "Depois da batalha", people: ["Lorian", "Mira", "Ronan"], soldiers: 8, speaker: "Mira", text: "Há qualquer coisa errada. Os movimentos do inimigo foram demasiado precisos.", action: {actor:"Mira", type:"walk", x:480} },
+
+    { sceneNumber: 2, scene: "map", title: "A reunião estratégica", people: ["Lorian", "Mira", "Ronan"], soldiers: 4, speaker: "Narrador", text: "Naquela noite, Lorian reuniu os seus oficiais. Sobre a mesa estava um mapa das montanhas, dos rios e das estradas. O inimigo acreditava que podia cercá-los. Mas Lorian já tinha encontrado uma maneira de transformar o cerco numa armadilha.", action: {actor:"Lorian", type:"walk", x:480} },
+    { sceneNumber: 2, scene: "map", title: "A reunião estratégica", people: ["Lorian", "Mira", "Ronan"], soldiers: 4, speaker: "Lorian", text: "Eles esperam que recuemos pela estrada principal. Não vamos fazer isso. Vamos obrigá-los a dividir as forças.", action: {actor:"Lorian", type:"raise"} },
+    { sceneNumber: 2, scene: "map", title: "A reunião estratégica", people: ["Lorian", "Mira", "Ronan"], soldiers: 4, speaker: "Ronan", text: "E se descobrirem o nosso plano?", action: {actor:"Ronan", type:"raise"} },
+    { sceneNumber: 2, scene: "map", title: "A reunião estratégica", people: ["Lorian", "Mira", "Ronan"], soldiers: 4, speaker: "Lorian", text: "Então terão de escolher entre perseguir-nos ou proteger o próprio exército. Em qualquer dos casos, nós controlamos o próximo movimento.", action: {actor:"Lorian", type:"attack"} },
+
+    { sceneNumber: 3, scene: "castle", title: "O discurso aos soldados", people: ["Lorian", "Ronan", "Mira"], soldiers: 18, speaker: "Narrador", text: "Na manhã seguinte, Lorian colocou-se diante dos soldados. Homens cansados, feridos e assustados esperavam ouvir uma promessa de vitória. Mas ele não lhes ofereceu palavras bonitas.", action: {actor:"Lorian", type:"walk", x:480} },
+    { sceneNumber: 3, scene: "castle", title: "O discurso aos soldados", people: ["Lorian", "Ronan", "Mira"], soldiers: 18, speaker: "Lorian", text: "Quem está disposto a morrer por esta missão?", action: {actor:"Lorian", type:"raise"} },
+    { sceneNumber: 3, scene: "castle", title: "O discurso aos soldados", people: ["Lorian", "Ronan", "Mira"], soldiers: 18, speaker: "Narrador", text: "O silêncio tomou conta do campo. Lorian olhou para cada rosto. Não procurava homens ansiosos por morrer. Procurava homens capazes de enfrentar o perigo e continuar vivos.", action: null },
+    { sceneNumber: 3, scene: "castle", title: "O discurso aos soldados", people: ["Lorian", "Ronan", "Mira"], soldiers: 18, speaker: "Lorian", text: "Não quero homens que desejam morrer. Quero homens que saibam pelo que estão a lutar e que tenham coragem para regressar vivos.", action: {actor:"Lorian", type:"raise"} },
+
+    { sceneNumber: 4, scene: "castle", title: "O recrutamento", people: ["Lorian", "Mira", "Ronan"], soldiers: 24, speaker: "Narrador", text: "Lorian começou a reunir arqueiros, engenheiros, cavaleiros e guerreiros experientes. Não queria simplesmente aumentar o número de soldados. Queria construir um exército com funções específicas, capaz de reagir a qualquer movimento do inimigo.", action: {actor:"Ronan", type:"walk", x:570} },
+    { sceneNumber: 4, scene: "castle", title: "O recrutamento", people: ["Lorian", "Mira", "Ronan"], soldiers: 24, speaker: "Mira", text: "Os homens estão a chegar. Alguns são arqueiros, outros conhecem as montanhas e as pontes.", action: {actor:"Mira", type:"raise"} },
+    { sceneNumber: 4, scene: "castle", title: "O recrutamento", people: ["Lorian", "Mira", "Ronan"], soldiers: 24, speaker: "Lorian", text: "Cada homem deve saber exatamente o que fazer. Não quero força sem disciplina.", action: {actor:"Lorian", type:"raise"} },
+
+    { sceneNumber: 5, scene: "bridge", title: "O sacrifício da ponte", people: ["Lorian", "Seran", "Ronan"], soldiers: 15, speaker: "Narrador", text: "O inimigo aproximava-se da ponte. Lorian percebeu que não havia tempo para salvar todos os homens. Seran e os veteranos receberam a missão de segurar a posição enquanto o resto do exército procurava uma saída.", action: {actor:"Seran", type:"attack"} },
+    { sceneNumber: 5, scene: "bridge", title: "O sacrifício da ponte", people: ["Lorian", "Seran", "Ronan"], soldiers: 15, speaker: "Seran", text: "Nós seguramos a ponte. Vai! Não deixes que o nosso sacrifício seja em vão!", action: {actor:"Seran", type:"raise"} },
+    { sceneNumber: 5, scene: "bridge", title: "O sacrifício da ponte", people: ["Lorian", "Seran", "Ronan"], soldiers: 15, speaker: "Lorian", text: "Ronan, leva os homens para a saída. Ninguém fica para trás sem necessidade!", action: {actor:"Lorian", type:"raise"} },
+    { sceneNumber: 5, scene: "bridge", title: "O sacrifício da ponte", people: ["Lorian", "Seran", "Ronan"], soldiers: 15, speaker: "Narrador", text: "O estrondo atravessou o vale. A ponte desabou. Seran e os veteranos tinham cumprido a missão. Lorian não olhou para trás. Continuou a avançar, carregando o peso daquela decisão.", action: {actor:"Ronan", type:"run", x:850} },
+
+    { sceneNumber: 6, scene: "castle", title: "O rei começa a compreender", people: ["Edric"], soldiers: 3, speaker: "Narrador", text: "No castelo, o rei Edric estudava os relatórios. Cada movimento de Lorian parecia impossível quando visto isoladamente. Mas, quando juntava todas as peças, o rei começou a perceber que não estava diante de um simples comandante.", action: null },
+    { sceneNumber: 6, scene: "castle", title: "O rei começa a compreender", people: ["Edric"], soldiers: 3, speaker: "Edric", text: "Ele não está apenas a vencer batalhas. Está a decidir onde o inimigo pode lutar e onde será obrigado a perder.", action: {actor:"Edric", type:"raise"} },
+
+    { sceneNumber: 7, scene: "night", title: "A batalha das três frentes", people: ["Lorian", "Mira", "Ronan", "Seran"], soldiers: 30, speaker: "Narrador", text: "Quando a noite caiu, o exército de Lorian atacou em três frentes. Os arqueiros atingiram as posições avançadas, os guerreiros bloquearam a estrada e os cavaleiros apareceram onde o inimigo menos esperava. A batalha tornou-se uma armadilha perfeita.", action: {actor:"Lorian", type:"attack"} },
+    { sceneNumber: 7, scene: "night", title: "A batalha das três frentes", people: ["Lorian", "Mira", "Ronan", "Seran"], soldiers: 30, speaker: "Ronan", text: "A primeira linha caiu! Eles estão a recuar!", action: {actor:"Ronan", type:"attack"} },
+    { sceneNumber: 7, scene: "night", title: "A batalha das três frentes", people: ["Lorian", "Mira", "Ronan", "Seran"], soldiers: 30, speaker: "Mira", text: "A segunda frente também está a avançar. Conseguimos!", action: {actor:"Mira", type:"raise"} },
+    { sceneNumber: 7, scene: "night", title: "A batalha das três frentes", people: ["Lorian", "Mira", "Ronan", "Seran"], soldiers: 30, speaker: "Narrador", text: "Ao amanhecer, o campo estava silencioso. O exército inimigo tinha sido derrotado. Os sobreviventes começaram a chamar Lorian de Deus da Guerra. Mas ele sabia que aquela vitória não era o fim.", action: {actor:"Lorian", type:"raise"} },
+
+    { sceneNumber: 8, scene: "castle", title: "A carta do rei", people: ["Lorian", "Mira", "Ronan"], soldiers: 5, speaker: "Narrador", text: "Uma carta de Edric chegou ao acampamento. Mas, quando os homens procuraram Aldric, encontraram a prisão vazia. Aldric tinha sido transferido. A guerra estava a mudar de direção e alguém continuava a mover as peças.", action: null },
+    { sceneNumber: 8, scene: "castle", title: "A carta do rei", people: ["Lorian", "Mira", "Ronan"], soldiers: 5, speaker: "Ronan", text: "A prisão está vazia. Aldric desapareceu.", action: {actor:"Ronan", type:"raise"} },
+    { sceneNumber: 8, scene: "castle", title: "A carta do rei", people: ["Lorian", "Mira", "Ronan"], soldiers: 5, speaker: "Lorian", text: "Então alguém está a tentar esconder alguma coisa. Vamos descobrir para onde o levaram.", action: {actor:"Lorian", type:"walk", x:700} },
+
+    { sceneNumber: 9, scene: "tower", title: "A ordem impossível", people: ["Lorian", "Aldric"], soldiers: 0, speaker: "Narrador", text: "Lorian chegou a uma torre antiga. Lá dentro encontrou Aldric e um documento imperial. A ordem tinha uma assinatura de Edric e determinava que Lorian recebesse o comando imperial. Mas havia algo ainda mais assustador.", action: {actor:"Lorian", type:"walk", x:430} },
+    { sceneNumber: 9, scene: "tower", title: "A ordem impossível", people: ["Lorian", "Aldric"], soldiers: 0, speaker: "Aldric", text: "Esta ordem foi escrita antes de chegares ao poder. Alguém já sabia o que irias fazer.", action: {actor:"Aldric", type:"raise"} },
+    { sceneNumber: 9, scene: "tower", title: "A ordem impossível", people: ["Lorian", "Aldric"], soldiers: 0, speaker: "Lorian", text: "Isso é impossível. Esta assinatura é minha. Mas eu ainda nem tinha nascido.", action: {actor:"Lorian", type:"raise"} },
+    { sceneNumber: 9, scene: "tower", title: "A ordem impossível", people: ["Lorian", "Aldric"], soldiers: 0, speaker: "Narrador", text: "Lorian ficou imóvel. Pela primeira vez, não estava a tentar prever os movimentos de um inimigo. Estava a tentar compreender como alguém podia conhecer o seu futuro antes mesmo de ele existir. A guerra tinha acabado de revelar um segredo muito maior.", action: null }
+];
+
+/* =====================================================
+   AVALIADOR DE TEXTO ENORME (ADICIONA HISTÓRIA)
+===================================================== */
+
+function toggleStoryEditor() {
+    document.getElementById("storyEditorBox").classList.toggle("open");
+}
+
+function clearHugeInput() {
+    document.getElementById("hugeStoryInput").value = "";
+}
+
+function fillHugeSample() {
+    document.getElementById("hugeStoryInput").value =
+`Lorian: O silêncio antes da tempestade no campo de batalha sempre traz um aviso.
+Mira: Os batedores viram tochas a mover-se junto à ponte antiga.
+Ronan: Se cruzarem a ponte durante a noite, vão tentar cercar o nosso flanco esquerdo.
+Seran: Deixem a vanguarda comigo. Nenhum inimigo passa por aquela ponte sem pagar o preço.
+Edric: Lorian pensou três passos à frente de todos os generais do reino.
+Aldric: O documento escondido na torre revela quem realmente escreveu este destino.
+Lorian: Agora não lutamos apenas por terras. Lutamos para quebrar o plano de quem nos controla.`;
+}
+
+function detectBackground(text) {
+    const t = text.toLowerCase();
+    if (t.includes("ponte")) return { bg: "bridge", title: "Na ponte" };
+    if (t.includes("torre")) return { bg: "tower", title: "Na torre" };
+    if (t.includes("castelo") || t.includes("rei") || t.includes("trono")) return { bg: "castle", title: "No castelo" };
+    if (t.includes("noite") || t.includes("lua") || t.includes("estrelas") || t.includes("madrugada")) return { bg: "night", title: "Sob a noite" };
+    if (t.includes("mapa") || t.includes("plano") || t.includes("estratégia")) return { bg: "map", title: "Mesa de estratégia" };
+    return { bg: "battle", title: "Campo de batalha" };
+}
+
+function parseLineToSegment(rawLine, index, currentSceneNum) {
+    let line = rawLine.trim();
+    if (!line) return null;
+
+    let speaker = "Narrador";
+    let speechText = line;
+
+    // Deteta padrões como "Nome: fala" ou "Nome — fala" ou "Nome - fala"
+    const match = line.match(/^([A-Za-zÀ-ÿ]{2,20})\s*(?::|—|-)\s*(.+)$/);
+    if (match) {
+        const candidate = match[1].trim();
+        const formattedName = candidate.charAt(0).toUpperCase() + candidate.slice(1);
+        if (formattedName.toLowerCase() !== "narrador") {
+            speaker = formattedName;
+            ensureCharacter(speaker);
+        }
+        speechText = match[2].trim();
+    } else {
+        // Verifica se alguma personagem conhecida é mencionada no início
+        const knownNames = Object.keys(characters);
+        for (const name of knownNames) {
+            const regex = new RegExp(`^${name}\\s+(?:disse|falou|respondeu|gritou|murmurou|perguntou)\\s*:?\\s*(.+)$`, "i");
+            const m2 = line.match(regex);
+            if (m2) {
+                speaker = name;
+                ensureCharacter(speaker);
+                speechText = m2[1].trim();
+                break;
+            }
+        }
+    }
+
+    const env = detectBackground(speechText);
+    const activePeople = speaker !== "Narrador"
+        ? Array.from(new Set(["Lorian", speaker])).slice(0, 4)
+        : ["Lorian", "Mira", "Ronan"];
+
+    const actions = ["walk", "raise", "attack", "run"];
+    const chosenAction = speaker !== "Narrador"
+        ? { actor: speaker, type: actions[index % actions.length], x: 260 + ((index * 95) % 520) }
+        : { actor: "Lorian", type: "walk", x: 320 + ((index * 70) % 420) };
+
+    return {
+        sceneNumber: currentSceneNum,
+        scene: env.bg,
+        title: `${env.title} (Parte ${currentSceneNum})`,
+        people: activePeople,
+        soldiers: (index % 3) * 6 + 4,
+        speaker: speaker,
+        text: speechText,
+        action: chosenAction
+    };
+}
+
+function applyHugeStory() {
+    const rawText = document.getElementById("hugeStoryInput").value.trim();
+    if (!rawText) {
+        alert("Cola ou escreve um texto enorme antes de aplicar!");
+        return;
+    }
+
+    // Divide por quebras de linha ou frases longas se for um bloco gigante
+    let chunks = rawText
+        .split(/\r?\n+/)
+        .map(l => l.trim())
+        .filter(Boolean);
+
+    if (chunks.length === 1 && rawText.length > 260) {
+        chunks = rawText.match(/[^.!?]+[.!?]+(?:\s|$)/g) || [rawText];
+    }
+
+    const parsedSegments = [];
+    let sceneCounter = 1;
+
+    chunks.forEach((chunk, idx) => {
+        if (idx > 0 && idx % 4 === 0) {
+            sceneCounter++;
+        }
+        const seg = parseLineToSegment(chunk, idx, sceneCounter);
+        if (seg) parsedSegments.push(seg);
+    });
+
+    if (parsedSegments.length === 0) return;
+
+    // Substitui o roteiro pelas novas falas avaliadas e atualiza tudo
+    story = parsedSegments;
+    rebuildSceneDropdown();
+
+    clearTimeout(speechTimer);
+    if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+
+    currentIndex = 0;
+    currentSegment = story[0];
+    running = true;
+    paused = false;
+    speechToken++;
+
+    document.getElementById("storyEditorBox").classList.remove("open");
+    speakSegment(story[0], speechToken);
+}
+
+/* =====================================================
+   LEITURA, VOZES E CONTROLO
+===================================================== */
+
+function updateSpeed(val) {
+    speechRate = parseFloat(val);
+    document.getElementById("speedLabel").textContent = speechRate.toFixed(1) + "x";
+}
+
+function updateStoryText(segment) {
+    const icon = segment.speaker === "Narrador" ? "📜" : "🗣️";
+    document.getElementById("currentSpeaker").textContent = `${icon} ${segment.speaker.toUpperCase()}`;
+    document.getElementById("currentText").textContent = segment.text;
+    document.getElementById("pageIndicator").textContent = `Página ${currentIndex + 1} / ${story.length}`;
+
+    const pct = Math.round(((currentIndex + 1) / story.length) * 100);
+    document.getElementById("progress").style.width = pct + "%";
+    document.getElementById("progressPercent").textContent = pct + "%";
+}
+
+function configureVoice(utterance, speaker) {
+    utterance.lang = "pt-PT";
+    utterance.rate = speechRate;
+
+    const ptVoices = availableVoices.filter(v => v.lang.includes("pt"));
+    if (ptVoices.length > 0) {
+        if (speaker === "Mira") {
+            const fem = ptVoices.find(v => /maria|joana|francisca|female|luciana/i.test(v.name));
+            if (fem) utterance.voice = fem;
+        } else {
+            const masc = ptVoices.find(v => /duarte|cristiano|daniel|male|ricardo/i.test(v.name));
+            if (masc) utterance.voice = masc;
+        }
+    }
+
+    if (speaker === "Narrador") utterance.pitch = 1.0;
+    else if (speaker === "Mira") utterance.pitch = 1.25;
+    else if (speaker === "Edric" || speaker === "Seran") utterance.pitch = 0.78;
+    else if (speaker === "Lorian") utterance.pitch = 0.9;
+    else utterance.pitch = 0.95;
+}
+
+function speakSegment(segment, token) {
+    if (!running || paused || token !== speechToken) return;
+
+    currentSegment = segment;
+    setScene(segment.scene, segment.title, segment.people);
+    applyAction(segment);
+    updateStoryText(segment);
+
+    clearTimeout(speechTimer);
+    const voiceEnabled = document.getElementById("voiceToggle").checked;
+
+    if (voiceEnabled && "speechSynthesis" in window) {
+        window.speechSynthesis.cancel();
+
+        const utterance = new SpeechSynthesisUtterance(segment.text);
+        configureVoice(utterance, segment.speaker);
+
+        utterance.onend = function() {
+            if (token !== speechToken || paused || !running) return;
+            nextSegment();
+        };
+
+        utterance.onerror = function() {
+            if (token !== speechToken || paused || !running) return;
+            nextSegment();
+        };
+
+        window.speechSynthesis.speak(utterance);
+    } else {
+        const duration = Math.max(1800, (segment.text.length * 48) / speechRate);
+        speechTimer = setTimeout(() => {
+            if (token !== speechToken || paused || !running) return;
+            nextSegment();
+        }, duration);
+    }
 }
 
 function startStory() {
-  isPlaying = true;
-  isPaused = false;
-  document.getElementById('btn-pause').textContent = "⏸ Pausar";
-  document.getElementById('btn-play').textContent = "▶ A Reproduzir...";
-  loadBeat(currentBeatIndex >= storyBeats.length - 1 ? 0 : currentBeatIndex);
-}
-
-function togglePause() {
-  if (!isPlaying) return;
-  if (!isPaused) {
-    isPaused = true;
-    isSpeaking = false;
-    window.speechSynthesis.pause();
-    document.getElementById('btn-pause').textContent = "▶ Retomar";
-  } else {
-    isPaused = false;
-    isSpeaking = true;
-    window.speechSynthesis.resume();
-    document.getElementById('btn-pause').textContent = "⏸ Pausar";
-  }
-}
-
-function nextScene() {
-  if (currentBeatIndex < storyBeats.length - 1) {
-    loadBeat(currentBeatIndex + 1);
-  }
-}
-
-function prevScene() {
-  if (currentBeatIndex > 0) {
-    loadBeat(currentBeatIndex - 1);
-  }
-}
-
-function jumpToScene(val) {
-  loadBeat(parseInt(val));
-}
-
-function updateSpeed(val) {
-  speechRate = parseFloat(val);
-  if (isPlaying && !isPaused) {
-    loadBeat(currentBeatIndex);
-  }
-}
-
-// =========================================================================
-// MOTOR GRÁFICO: AMBIENTES COM PROFUNDIDADE, CORPOS ESTRUTURADOS E ROSTOS
-// =========================================================================
-
-function drawTree(x, y, scale = 1, dark = false) {
-  ctx.save();
-  ctx.translate(x, y);
-  ctx.scale(scale, scale);
-  ctx.fillStyle = dark ? "#27272a" : "#18181b";
-  ctx.strokeStyle = dark ? "#3f3f46" : "#09090b";
-  ctx.lineWidth = 3;
-
-  // Tronco texturizado
-  ctx.beginPath();
-  ctx.moveTo(-6, 0);
-  ctx.lineTo(-3, -85);
-  ctx.lineTo(3, -85);
-  ctx.lineTo(6, 0);
-  ctx.closePath();
-  ctx.fill();
-
-  // Galhos
-  ctx.beginPath();
-  ctx.moveTo(0, -55);
-  ctx.lineTo(-26, -80);
-  ctx.moveTo(0, -65);
-  ctx.lineTo(28, -88);
-  ctx.stroke();
-
-  // Copa em camadas
-  ctx.beginPath();
-  ctx.arc(0, -105, 38, 0, Math.PI * 2);
-  ctx.arc(-28, -88, 26, 0, Math.PI * 2);
-  ctx.arc(28, -88, 26, 0, Math.PI * 2);
-  ctx.fill();
-
-  // Luz na copa
-  ctx.fillStyle = dark ? "#3f3f46" : "#3f3f46";
-  ctx.beginPath();
-  ctx.arc(-10, -112, 16, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.restore();
-}
-
-function drawMountain(x, y, w, h) {
-  ctx.fillStyle = "#d4d4d8";
-  ctx.beginPath();
-  ctx.moveTo(x - w / 2, y);
-  ctx.lineTo(x, y - h);
-  ctx.lineTo(x + w / 2, y);
-  ctx.closePath();
-  ctx.fill();
-
-  // Face sombreada da montanha
-  ctx.fillStyle = "#a1a1aa";
-  ctx.beginPath();
-  ctx.moveTo(x, y - h);
-  ctx.lineTo(x + w / 2, y);
-  ctx.lineTo(x + w * 0.08, y);
-  ctx.closePath();
-  ctx.fill();
-
-  // Contorno
-  ctx.strokeStyle = "#52525b";
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  ctx.moveTo(x - w / 2, y);
-  ctx.lineTo(x, y - h);
-  ctx.lineTo(x + w / 2, y);
-  ctx.stroke();
-}
-
-function drawEnvironment(env, isCloseUp) {
-  const isNight = env === "night_battle" || env === "tower_interior";
-
-  // Gradiente de Céu / Fundo
-  const grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
-  if (isNight) {
-    grad.addColorStop(0, "#09090b");
-    grad.addColorStop(1, "#27272a");
-  } else {
-    grad.addColorStop(0, "#e4e4e7");
-    grad.addColorStop(1, "#fafafa");
-  }
-  ctx.fillStyle = grad;
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  if (env === "hills") {
-    drawMountain(220, 440, 420, 210);
-    drawMountain(800, 440, 460, 190);
-    if (!isCloseUp) {
-      drawTree(70, 440, 0.9);
-      drawTree(520, 440, 0.65);
-      // Soldados escondidos na colina
-      ctx.fillStyle = "#3f3f46";
-      for (let i = 0; i < 7; i++) {
-        ctx.fillRect(750 + i * 24, 345 + (i % 2) * 8, 7, 14);
-      }
+    if (running && !paused) return;
+    if (currentIndex >= story.length) {
+        restartStory();
+        return;
     }
-  } else if (env === "war_tent" || env === "imperial_tent") {
-    // Interior da tenda com pilares e estandartes
-    ctx.strokeStyle = "#27272a";
-    ctx.lineWidth = 4;
-    ctx.beginPath();
-    ctx.moveTo(40, 440);
-    ctx.lineTo(512, 70);
-    ctx.lineTo(984, 440);
-    ctx.stroke();
-
-    // Estandarte no fundo
-    ctx.fillStyle = env === "imperial_tent" ? "#18181b" : "#52525b";
-    ctx.fillRect(482, 110, 60, 110);
-    ctx.strokeStyle = "#fff";
-    ctx.strokeRect(488, 116, 48, 98);
-
-    if (!isCloseUp) {
-      // Mesa tática detalhada
-      ctx.fillStyle = "#18181b";
-      ctx.fillRect(360, 390, 260, 14);
-      ctx.fillRect(385, 404, 14, 36);
-      ctx.fillRect(580, 404, 14, 36);
-      // Mapa aberto e pedras de posição
-      ctx.fillStyle = "#ffffff";
-      ctx.fillRect(410, 383, 160, 7);
-      ctx.fillStyle = "#09090b";
-      ctx.fillRect(440, 378, 8, 5);
-      ctx.fillRect(495, 378, 8, 5);
-    }
-  } else if (env === "camp_rock") {
-    drawMountain(760, 440, 500, 220);
-    drawTree(80, 440, 1.05);
-    drawTree(930, 440, 0.95);
-    if (!isCloseUp) {
-      // Rocha esculpida
-      ctx.fillStyle = "#27272a";
-      ctx.beginPath();
-      ctx.moveTo(130, 440);
-      ctx.lineTo(165, 385);
-      ctx.lineTo(255, 385);
-      ctx.lineTo(295, 440);
-      ctx.closePath();
-      ctx.fill();
-    }
-  } else if (env === "forest_march") {
-    drawMountain(820, 440, 480, 250);
-    for (let i = 0; i < 8; i++) {
-      drawTree(50 + i * 135, 440, 0.8 + (i % 3) * 0.2);
-    }
-  } else if (env === "bridge") {
-    drawMountain(200, 440, 380, 190);
-    if (!isCloseUp) {
-      drawTree(55, 440, 0.9);
-      ctx.fillStyle = "#18181b";
-      ctx.fillRect(0, 440, 460, 136);
-      ctx.fillRect(820, 440, 204, 136);
-
-      ctx.fillStyle = "#52525b";
-      if (!worldState.bridgeBroken) {
-        ctx.fillRect(460, 415, 360, 25);
-        ctx.fillStyle = "#e4e4e7";
-        ctx.beginPath();
-        ctx.arc(550, 440, 40, Math.PI, 0);
-        ctx.arc(730, 440, 40, Math.PI, 0);
-        ctx.fill();
-      } else {
-        ctx.save();
-        ctx.translate(460, 415);
-        ctx.rotate(0.38);
-        ctx.fillRect(0, 0, 165, 22);
-        ctx.restore();
-
-        ctx.save();
-        ctx.translate(820, 415);
-        ctx.rotate(-0.42);
-        ctx.fillRect(-165, 0, 165, 22);
-        ctx.restore();
-      }
-      return;
-    }
-  } else if (env === "night_battle") {
-    ctx.fillStyle = "#fafafa";
-    ctx.beginPath();
-    ctx.arc(850, 110, 42, 0, Math.PI * 2);
-    ctx.fill();
-    // Chuva de flechas luminosas
-    ctx.strokeStyle = "rgba(255,255,255,0.75)";
-    ctx.lineWidth = 2;
-    for (let i = 0; i < 10; i++) {
-      const ax = ((frameCount * 7 + i * 105) % 820) + 100;
-      const ay = 160 + Math.sin(ax * 0.01) * 55 + (i * 18);
-      ctx.beginPath();
-      ctx.moveTo(ax, ay);
-      ctx.lineTo(ax + 26, ay + 7);
-      ctx.stroke();
-    }
-  } else if (env === "tower_interior") {
-    ctx.strokeStyle = "#3f3f46";
-    ctx.lineWidth = 4;
-    ctx.strokeRect(452, 110, 120, 180);
-    ctx.beginPath();
-    ctx.moveTo(512, 110);
-    ctx.lineTo(512, 290);
-    ctx.moveTo(452, 200);
-    ctx.lineTo(572, 200);
-    ctx.stroke();
-
-    if (!isCloseUp) {
-      ctx.fillStyle = "#27272a";
-      ctx.fillRect(460, 390, 104, 10);
-      ctx.fillRect(475, 400, 10, 40);
-      ctx.fillRect(540, 400, 10, 40);
-      // Brilho da lamparina
-      const glow = ctx.createRadialGradient(512, 370, 5, 512, 370, 80);
-      glow.addColorStop(0, "rgba(255,255,255,0.6)");
-      glow.addColorStop(1, "rgba(255,255,255,0)");
-      ctx.fillStyle = glow;
-      ctx.beginPath();
-      ctx.arc(512, 370, 80, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.fillStyle = "#fff";
-      ctx.fillRect(506, 372, 12, 18);
-    }
-  }
-
-  // Solo com relevo
-  if (!isCloseUp) {
-    ctx.fillStyle = isNight ? "#09090b" : "#18181b";
-    ctx.fillRect(0, 440, canvas.width, 136);
-    ctx.strokeStyle = isNight ? "#3f3f46" : "#52525b";
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.moveTo(0, 440);
-    ctx.lineTo(canvas.width, 440);
-    ctx.stroke();
-  }
+    running = true;
+    paused = false;
+    speechToken++;
+    speakSegment(story[currentIndex], speechToken);
 }
 
-// =========================================================================
-// DESENHO DE CORPO ESTRUTURADO E ANATÓMICO (PLANO GERAL)
-// =========================================================================
-
-function drawStructuredCharacter(ent, isNight) {
-  const p = CHAR_PROFILES[ent.profileKey];
-  const ink = isNight ? "#f4f4f5" : "#18181b";
-  const fillBody = p.whiteArmor ? "#ffffff" : (isNight ? "#27272a" : "#27272a");
-  const fillSkin = p.whiteArmor ? "#ffffff" : (isNight ? "#e4e4e7" : "#f4f4f5");
-
-  // Movimento suave
-  if (Math.abs(ent.x - ent.targetX) > 2) {
-    const speed = ent.action === "flee" ? 3.5 : (ent.action === "march" ? 1.9 : 1.4);
-    ent.x += ent.x < ent.targetX ? speed : -speed;
-    ent.walkCycle += 0.18;
-  } else if (ent.action === "walk" || ent.action === "march") {
-    ent.action = "idle";
-  }
-
-  const isMoving = Math.abs(ent.x - ent.targetX) > 2;
-  const legSwing = isMoving ? Math.sin(ent.walkCycle) * 14 : 0;
-  const fightAngle = ent.action === "fight" ? Math.sin(frameCount * 0.28 + ent.x) * 0.8 : 0;
-  const dir = ent.dir === "right" ? 1 : -1;
-
-  ctx.save();
-  ctx.translate(ent.x, ent.y);
-
-  // Sombra no chão
-  ctx.fillStyle = "rgba(0,0,0,0.35)";
-  ctx.beginPath();
-  ctx.ellipse(0, 0, 18, 5, 0, 0, Math.PI * 2);
-  ctx.fill();
-
-  // 1. Capa esvoaçante (atrás do corpo)
-  if (p.cape) {
-    ctx.fillStyle = p.whiteArmor ? "#e4e4e7" : "#09090b";
-    ctx.strokeStyle = ink;
-    ctx.lineWidth = 1.5;
-    ctx.beginPath();
-    ctx.moveTo(-4 * dir, -62);
-    ctx.quadraticCurveTo(
-      -24 * dir,
-      -35 + Math.sin(frameCount * 0.12 + ent.x) * 4,
-      -28 * dir - legSwing * 0.4,
-      -8
-    );
-    ctx.lineTo(-6 * dir, -12);
-    ctx.closePath();
-    ctx.fill();
-    ctx.stroke();
-  }
-
-  // 2. Pernas estruturadas (coxas, joelhos e botas)
-  ctx.strokeStyle = ink;
-  ctx.lineWidth = 5.5;
-  ctx.lineCap = "round";
-
-  // Perna traseira
-  ctx.beginPath();
-  ctx.moveTo(0, -32);
-  ctx.lineTo(-legSwing * 0.6, -16);
-  ctx.lineTo(-legSwing, -2);
-  ctx.stroke();
-
-  // Perna dianteira
-  ctx.beginPath();
-  ctx.moveTo(0, -32);
-  ctx.lineTo(legSwing * 0.6, -16);
-  ctx.lineTo(legSwing, -2);
-  ctx.stroke();
-
-  // 3. Tronco / Peitoral com ombros largos
-  ctx.fillStyle = fillBody;
-  ctx.strokeStyle = ink;
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  ctx.moveTo(-11, -64); // Ombro esquerdo
-  ctx.lineTo(11, -64);  // Ombro direito
-  ctx.lineTo(8, -32);   // Cintura direita
-  ctx.lineTo(-8, -32);  // Cintura esquerda
-  ctx.closePath();
-  ctx.fill();
-  ctx.stroke();
-
-  // Detalhe de armadura no peito
-  if (p.armor === "heavy" || p.armor === "white" || p.armor === "imperial") {
-    ctx.beginPath();
-    ctx.moveTo(-9, -54);
-    ctx.lineTo(0, -48);
-    ctx.lineTo(9, -54);
-    ctx.stroke();
-  }
-
-  // 4. Cabeça e Detalhes (Elmo, Capuz, Coroa, Cabelo)
-  ctx.fillStyle = fillSkin;
-  ctx.beginPath();
-  ctx.arc(0, -76, 10, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.stroke();
-
-  if (p.hair === "helmet" || p.hair === "helmet_open") {
-    // Elmo metálico
-    ctx.fillStyle = "#52525b";
-    ctx.beginPath();
-    ctx.arc(0, -77, 11, Math.PI, 0);
-    ctx.lineTo(11, -72);
-    ctx.lineTo(-11, -72);
-    ctx.closePath();
-    ctx.fill();
-    ctx.stroke();
-  } else if (p.hood) {
-    // Capuz de batedora (Mira)
-    ctx.fillStyle = "#3f3f46";
-    ctx.beginPath();
-    ctx.arc(-2 * dir, -76, 11.5, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.stroke();
-  } else {
-    // Cabelo
-    ctx.fillStyle = p.hair === "gray_short" || p.hair === "long_gray" ? "#a1a1aa" : "#09090b";
-    ctx.beginPath();
-    ctx.arc(0, -78, 10.5, Math.PI * 0.9, Math.PI * 2.1);
-    ctx.fill();
-  }
-
-  if (p.crown) {
-    ctx.fillStyle = "#ffffff";
-    ctx.beginPath();
-    ctx.moveTo(-8, -86);
-    ctx.lineTo(-5, -94);
-    ctx.lineTo(0, -88);
-    ctx.lineTo(5, -94);
-    ctx.lineTo(8, -86);
-    ctx.closePath();
-    ctx.fill();
-    ctx.stroke();
-  }
-
-  // Olho direcional
-  ctx.fillStyle = "#09090b";
-  ctx.fillRect(3 * dir, -78, 2.5, 2.5);
-
-  // 5. Braço e Arma
-  ctx.save();
-  ctx.translate(2 * dir, -60);
-  if (ent.action === "fight") {
-    ctx.rotate(fightAngle * dir);
-  } else if (ent.action === "point" || ent.action === "speech") {
-    ctx.rotate(-0.9 * dir);
-  } else if (ent.action === "celebrate") {
-    ctx.rotate(-2.4 * dir);
-  } else {
-    ctx.rotate((legSwing * 0.03) * dir);
-  }
-
-  // Braço
-  ctx.strokeStyle = ink;
-  ctx.lineWidth = 4.5;
-  ctx.beginPath();
-  ctx.moveTo(0, 0);
-  ctx.lineTo(14 * dir, 16);
-  ctx.stroke();
-
-  // Arma na mão
-  if (p.weapon === "sword" || p.weapon === "broad_sword") {
-    ctx.strokeStyle = isNight ? "#ffffff" : "#3f3f46";
-    ctx.lineWidth = p.weapon === "broad_sword" ? 3.5 : 2.5;
-    ctx.beginPath();
-    ctx.moveTo(14 * dir, 16);
-    ctx.lineTo(38 * dir, 6);
-    ctx.stroke();
-  } else if (p.weapon === "spear") {
-    ctx.strokeStyle = ink;
-    ctx.lineWidth = 2.2;
-    ctx.beginPath();
-    ctx.moveTo(-10 * dir, 22);
-    ctx.lineTo(44 * dir, 4);
-    ctx.stroke();
-  } else if (p.weapon === "bow") {
-    ctx.strokeStyle = ink;
-    ctx.lineWidth = 2.2;
-    ctx.beginPath();
-    ctx.arc(14 * dir, 14, 16, -Math.PI / 2, Math.PI / 2, dir < 0);
-    ctx.stroke();
-  }
-  ctx.restore();
-
-  // Nome da personagem
-  const label = ent.customName !== null ? ent.customName : p.name;
-  if (label) {
-    ctx.font = "bold 12px sans-serif";
-    ctx.textAlign = "center";
-    ctx.fillStyle = ink;
-    ctx.fillText(label, 0, -100);
-  }
-
-  ctx.restore();
+function nextSegment() {
+    if (!running || paused) return;
+    currentIndex++;
+    if (currentIndex >= story.length) {
+        finishStory();
+        return;
+    }
+    speakSegment(story[currentIndex], speechToken);
 }
 
-// =========================================================================
-// PLANO DE DIÁLOGO: CLOSE-UP NO ROSTO COM BOCA ANIMADA E TRAÇOS ÚNICOS
-// =========================================================================
+function skipNext() {
+    clearTimeout(speechTimer);
+    if ("speechSynthesis" in window) window.speechSynthesis.cancel();
 
-function drawPortraitBust(profileKey, x, y, facing, isTalking, isNight) {
-  const p = CHAR_PROFILES[profileKey];
-  const dir = facing === "right" ? 1 : -1;
-  const mouthOpen = isTalking ? Math.abs(Math.sin(frameCount * 0.38)) * 11 + 2 : 0;
-
-  ctx.save();
-  ctx.translate(x, y);
-
-  // Sombra dramática de fundo do busto
-  ctx.fillStyle = isNight ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.06)";
-  ctx.beginPath();
-  ctx.arc(0, -40, 145, 0, Math.PI * 2);
-  ctx.fill();
-
-  // Ombros e Armadura (Busto largo)
-  ctx.fillStyle = p.whiteArmor ? "#f4f4f5" : "#18181b";
-  ctx.strokeStyle = isNight ? "#e4e4e7" : "#09090b";
-  ctx.lineWidth = 3.5;
-
-  ctx.beginPath();
-  ctx.moveTo(-135, 160);
-  ctx.quadraticCurveTo(-125, 45, -45, 35);
-  ctx.lineTo(45, 35);
-  ctx.quadraticCurveTo(125, 45, 135, 160);
-  ctx.closePath();
-  ctx.fill();
-  ctx.stroke();
-
-  // Detalhes da armadura / gola
-  ctx.strokeStyle = p.whiteArmor ? "#52525b" : "#71717a";
-  ctx.lineWidth = 2.5;
-  ctx.beginPath();
-  ctx.moveTo(-55, 40);
-  ctx.lineTo(0, 95);
-  ctx.lineTo(55, 40);
-  ctx.stroke();
-
-  // Pescoço
-  ctx.fillStyle = "#e4e4e7";
-  ctx.strokeStyle = "#09090b";
-  ctx.lineWidth = 3;
-  ctx.fillRect(-24, 5, 48, 42);
-  ctx.strokeRect(-24, 5, 48, 42);
-
-  // Rosto (Mandíbula esculpida)
-  ctx.fillStyle = "#fafafa";
-  ctx.beginPath();
-  ctx.moveTo(-54, -95);
-  ctx.lineTo(54, -95);
-  ctx.lineTo(50, -15);
-  ctx.quadraticCurveTo(0, 32 + mouthOpen * 0.35, 0, 32 + mouthOpen * 0.35);
-  ctx.quadraticCurveTo(-50, -15, -54, -95);
-  ctx.closePath();
-  ctx.fill();
-  ctx.stroke();
-
-  // Barba (Ronan, Seran, Aldric, Edric)
-  if (p.beard) {
-    ctx.fillStyle = (p.hair === "gray_short" || p.hair === "long_gray") ? "#a1a1aa" : "#27272a";
-    ctx.beginPath();
-    ctx.moveTo(-51, -30);
-    ctx.lineTo(-42, 8);
-    ctx.quadraticCurveTo(0, 34 + mouthOpen * 0.35, 42, 8);
-    ctx.lineTo(51, -30);
-    ctx.lineTo(35, -18);
-    ctx.lineTo(0, -14);
-    ctx.lineTo(-35, -18);
-    ctx.closePath();
-    ctx.fill();
-  }
-
-  // Cicatriz (Ronan, Seran, Aldric)
-  if (p.scar) {
-    ctx.strokeStyle = "#71717a";
-    ctx.lineWidth = 2.2;
-    ctx.beginPath();
-    ctx.moveTo(18 * dir, -62);
-    ctx.lineTo(30 * dir, -34);
-    ctx.stroke();
-  }
-
-  // Olhos e Sobrancelhas Expressivas
-  const eyeOffsetX = 12 * dir;
-  // Sobrancelhas
-  ctx.strokeStyle = "#09090b";
-  ctx.lineWidth = 4.5;
-  ctx.beginPath();
-  ctx.moveTo(-30 + eyeOffsetX, -58);
-  ctx.lineTo(-8 + eyeOffsetX, -53);
-  ctx.moveTo(8 + eyeOffsetX, -53);
-  ctx.lineTo(30 + eyeOffsetX, -58);
-  ctx.stroke();
-
-  // Olhos
-  ctx.fillStyle = "#09090b";
-  ctx.beginPath();
-  ctx.ellipse(-19 + eyeOffsetX, -44, 6, 4, 0, 0, Math.PI * 2);
-  ctx.ellipse(19 + eyeOffsetX, -44, 6, 4, 0, 0, Math.PI * 2);
-  ctx.fill();
-
-  // Brilho nos olhos
-  ctx.fillStyle = "#ffffff";
-  ctx.fillRect(-20 + eyeOffsetX, -46, 2.5, 2.5);
-  ctx.fillRect(18 + eyeOffsetX, -46, 2.5, 2.5);
-
-  // Nariz
-  ctx.strokeStyle = "#27272a";
-  ctx.lineWidth = 2.5;
-  ctx.beginPath();
-  ctx.moveTo(eyeOffsetX, -46);
-  ctx.lineTo(eyeOffsetX + 6 * dir, -22);
-  ctx.lineTo(eyeOffsetX - 3 * dir, -20);
-  ctx.stroke();
-
-  // BOCA ANIMADA (mexe conforme a fala)
-  const mouthY = -3;
-  ctx.fillStyle = "#09090b";
-  ctx.strokeStyle = "#09090b";
-  ctx.lineWidth = 3;
-  if (mouthOpen > 1.5) {
-    ctx.beginPath();
-    ctx.ellipse(eyeOffsetX, mouthY + mouthOpen * 0.25, 16, mouthOpen * 0.65, 0, 0, Math.PI * 2);
-    ctx.fill();
-  } else {
-    ctx.beginPath();
-    ctx.moveTo(-16 + eyeOffsetX, mouthY);
-    ctx.lineTo(16 + eyeOffsetX, mouthY);
-    ctx.stroke();
-  }
-
-  // Cabelo / Capuz / Elmo / Coroa
-  if (p.hood) {
-    ctx.fillStyle = "#27272a";
-    ctx.strokeStyle = "#09090b";
-    ctx.lineWidth = 3.5;
-    ctx.beginPath();
-    ctx.moveTo(-68, 35);
-    ctx.quadraticCurveTo(-75, -125, 0, -130);
-    ctx.quadraticCurveTo(75, -125, 68, 35);
-    ctx.lineTo(52, 35);
-    ctx.quadraticCurveTo(58, -95, 0, -98);
-    ctx.quadraticCurveTo(-58, -95, -52, 35);
-    ctx.closePath();
-    ctx.fill();
-    ctx.stroke();
-  } else if (p.hair === "helmet") {
-    ctx.fillStyle = "#3f3f46";
-    ctx.beginPath();
-    ctx.arc(0, -82, 62, Math.PI, 0);
-    ctx.lineTo(62, -55);
-    ctx.lineTo(-62, -55);
-    ctx.closePath();
-    ctx.fill();
-    ctx.stroke();
-  } else {
-    ctx.fillStyle = (p.hair === "gray_short" || p.hair === "long_gray") ? "#a1a1aa" : "#09090b";
-    ctx.beginPath();
-    ctx.moveTo(-58, -60);
-    ctx.quadraticCurveTo(-62, -125, 0, -125);
-    ctx.quadraticCurveTo(62, -125, 58, -60);
-    ctx.lineTo(48, -82);
-    ctx.lineTo(0, -92);
-    ctx.lineTo(-48, -82);
-    ctx.closePath();
-    ctx.fill();
-
-    if (p.hair === "long_gray") {
-      ctx.fillRect(-62, -65, 14, 95);
-      ctx.fillRect(48, -65, 14, 95);
+    if (currentIndex + 1 >= story.length) {
+        finishStory();
+        return;
     }
-  }
 
-  if (p.crown) {
-    ctx.fillStyle = "#ffffff";
-    ctx.strokeStyle = "#09090b";
-    ctx.lineWidth = 3;
-    ctx.beginPath();
-    ctx.moveTo(-45, -112);
-    ctx.lineTo(-30, -148);
-    ctx.lineTo(-10, -122);
-    ctx.lineTo(0, -155);
-    ctx.lineTo(10, -122);
-    ctx.lineTo(30, -148);
-    ctx.lineTo(45, -112);
-    ctx.closePath();
-    ctx.fill();
-    ctx.stroke();
-  }
-
-  // Placa de identificação da personagem
-  ctx.fillStyle = isNight ? "#f4f4f5" : "#09090b";
-  ctx.fillRect(-90, 125, 180, 32);
-  ctx.fillStyle = isNight ? "#09090b" : "#ffffff";
-  ctx.font = "bold 14px sans-serif";
-  ctx.textAlign = "center";
-  ctx.fillText(p.name.toUpperCase(), 0, 146);
-
-  ctx.restore();
+    currentIndex++;
+    running = true;
+    paused = false;
+    speechToken++;
+    speakSegment(story[currentIndex], speechToken);
 }
 
-// =========================================================================
-// LOOP PRINCIPAL DE RENDERIZAÇÃO
-// =========================================================================
+function prevSegment() {
+    clearTimeout(speechTimer);
+    if ("speechSynthesis" in window) window.speechSynthesis.cancel();
 
-function animate() {
-  frameCount++;
-  const beat = storyBeats[currentBeatIndex];
-  const elapsed = (performance.now() - beatStartTime) / 1000;
-  const isNight = beat.env === "night_battle" || beat.env === "tower_interior";
-
-  if (!isPaused) {
-    beat.update(worldState, elapsed);
-  }
-
-  if (beat.shot === "dialogue") {
-    drawEnvironment(beat.env, true);
-
-    // Vinheta cinematográfica
-    ctx.fillStyle = isNight ? "rgba(0,0,0,0.45)" : "rgba(255,255,255,0.35)";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    const talkLeft = isSpeaking && (beat.activeSpeaker === "left" || beat.activeSpeaker === "both");
-    const talkRight = isSpeaking && (beat.activeSpeaker === "right" || beat.activeSpeaker === "both");
-
-    if (beat.leftChar) {
-      drawPortraitBust(beat.leftChar, 280, 415, "right", talkLeft, isNight);
-    }
-    if (beat.rightChar) {
-      drawPortraitBust(beat.rightChar, 744, 415, "left", talkRight, isNight);
-    }
-  } else {
-    drawEnvironment(beat.env, false);
-    worldState.entities.forEach(ent => drawStructuredCharacter(ent, isNight));
-  }
-
-  // Barras pretas de cinema (Letterbox)
-  ctx.fillStyle = "#09090b";
-  ctx.fillRect(0, 0, canvas.width, 32);
-  ctx.fillRect(0, canvas.height - 32, canvas.width, 32);
-
-  requestAnimationFrame(animate);
+    currentIndex = Math.max(0, currentIndex - 1);
+    running = true;
+    paused = false;
+    speechToken++;
+    speakSegment(story[currentIndex], speechToken);
 }
 
-// Iniciar no primeiro quadro
-loadBeat(0);
-animate();
+function jumpToScene(indexStr) {
+    clearTimeout(speechTimer);
+    if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+
+    currentIndex = parseInt(indexStr, 10) || 0;
+    running = true;
+    paused = false;
+    speechToken++;
+    speakSegment(story[currentIndex], speechToken);
+}
+
+function pauseStory() {
+    if (!running) return;
+    paused = true;
+    if ("speechSynthesis" in window) window.speechSynthesis.pause();
+    clearTimeout(speechTimer);
+}
+
+function resumeStory() {
+    if (!running || !paused) return;
+    paused = false;
+    if ("speechSynthesis" in window && window.speechSynthesis.paused) {
+        window.speechSynthesis.resume();
+    } else {
+        speechToken++;
+        speakSegment(story[currentIndex], speechToken);
+    }
+}
+
+function restartStory() {
+    running = false;
+    paused = false;
+    currentIndex = 0;
+    speechToken++;
+    clearTimeout(speechTimer);
+    if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+
+    speakingCharacter = null;
+    speechBubble = "";
+    currentSegment = story[0];
+
+    document.getElementById("currentSpeaker").textContent = "📜 NARRADOR";
+    document.getElementById("currentText").textContent = "A história está pronta para começar. Carrega em INICIAR.";
+    document.getElementById("pageIndicator").textContent = `Página 1 / ${story.length}`;
+    document.getElementById("progress").style.width = "0%";
+    document.getElementById("progressPercent").textContent = "0%";
+
+    setScene(story[0].scene, story[0].title, story[0].people);
+}
+
+function finishStory() {
+    running = false;
+    paused = false;
+    if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+
+    speakingCharacter = null;
+    speechBubble = "";
+
+    document.getElementById("currentSpeaker").textContent = "📖 FIM DO EPISÓDIO";
+    document.getElementById("currentText").textContent = "O episódio terminou. A história continua no próximo capítulo.";
+    document.getElementById("progress").style.width = "100%";
+    document.getElementById("progressPercent").textContent = "100%";
+}
+
+/* =====================================================
+   INICIALIZAÇÃO
+===================================================== */
+rebuildSceneDropdown();
+currentSegment = story[0];
+setScene(story[0].scene, story[0].title, story[0].people);
+document.getElementById("pageIndicator").textContent = `Página 1 / ${story.length}`;
 </script>
+
 </body>
 </html>
