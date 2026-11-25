@@ -10,6 +10,7 @@
 :root {
     --bg-dark: #0b0e14;
     --panel-bg: #141923;
+    --book-bg: #1c1917;
     --book-page: #f4ebd8;
     --book-ink: #29221c;
     --gold: #d4af37;
@@ -18,7 +19,7 @@
     --text-muted: #94a3b8;
     --accent-green: #10b981;
     --accent-red: #ef4444;
-    --accent-purple: #8b5cf6;
+    --accent-blue: #38bdf8;
 }
 
 * {
@@ -60,7 +61,7 @@ header p {
     margin: 6px 0 0;
 }
 
-/* CONTENTOR PRINCIPAL */
+/* CONTENTOR PRINCIPAL COM ESPAÇAMENTO */
 .container {
     width: 100%;
     max-width: 1280px;
@@ -106,6 +107,7 @@ header p {
     border: 1px solid rgba(16, 185, 129, 0.3);
 }
 
+/* SELETOR RÁPIDO DE CENAS */
 .quick-jump {
     display: flex;
     align-items: center;
@@ -128,80 +130,6 @@ select:focus {
     border-color: var(--gold);
 }
 
-/* ÁREA DE ADICIONAR HISTÓRIA ENORME */
-.story-editor-box {
-    display: none;
-    background: var(--panel-bg);
-    border: 2px solid var(--gold);
-    border-radius: 16px;
-    padding: 24px;
-    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.6);
-    animation: fadeIn 0.25s ease;
-}
-
-.story-editor-box.open {
-    display: block;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-8px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-.editor-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-bottom: 14px;
-}
-
-.editor-header h2 {
-    margin: 0;
-    font-family: 'Cinzel', serif;
-    font-size: 20px;
-    color: var(--gold);
-}
-
-.editor-help {
-    font-size: 13px;
-    color: var(--text-muted);
-    line-height: 1.5;
-    margin-bottom: 14px;
-    background: rgba(255, 255, 255, 0.03);
-    padding: 12px 14px;
-    border-radius: 10px;
-    border-left: 3px solid var(--gold);
-}
-
-textarea#hugeStoryInput {
-    width: 100%;
-    min-height: 320px;
-    max-height: 600px;
-    padding: 16px;
-    border-radius: 12px;
-    border: 1px solid rgba(255, 255, 255, 0.16);
-    background: #0d121b;
-    color: #f8fafc;
-    font-family: 'Lora', serif;
-    font-size: 15px;
-    line-height: 1.65;
-    resize: vertical;
-    outline: none;
-}
-
-textarea#hugeStoryInput:focus {
-    border-color: var(--gold);
-}
-
-.editor-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-    margin-top: 16px;
-}
-
 /* ÁREA PRINCIPAL: PALCO + LIVRO */
 .main-stage {
     display: grid;
@@ -216,7 +144,7 @@ textarea#hugeStoryInput:focus {
     }
 }
 
-/* PALCO DA ANIMAÇÃO */
+/* PALCO DA ANIMAÇÃO (CANVAS) */
 .canvas-wrapper {
     position: relative;
     border-radius: 16px;
@@ -235,7 +163,7 @@ canvas {
     aspect-ratio: 16 / 9;
 }
 
-/* BARRA DE CONTROLOS */
+/* BARRA DE CONTROLOS RÁPIDOS */
 .controls-panel {
     background: #131822;
     padding: 16px;
@@ -253,7 +181,7 @@ canvas {
 
 button {
     flex: 1;
-    min-width: 105px;
+    min-width: 95px;
     padding: 12px 14px;
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 10px;
@@ -288,23 +216,6 @@ button.primary:hover {
     background: linear-gradient(135deg, #047857, #059669);
 }
 
-button.story-btn {
-    background: linear-gradient(135deg, #7c3aed, #8b5cf6);
-    border: none;
-    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
-}
-
-button.story-btn:hover {
-    background: linear-gradient(135deg, #6d28d9, #7c3aed);
-}
-
-button.gold-btn {
-    background: linear-gradient(135deg, #b45309, #d4af37);
-    color: #111827;
-    border: none;
-    font-weight: 700;
-}
-
 button.danger {
     background: rgba(239, 68, 68, 0.18);
     border-color: rgba(239, 68, 68, 0.4);
@@ -315,7 +226,7 @@ button.danger:hover {
     background: rgba(239, 68, 68, 0.3);
 }
 
-/* VELOCIDADE E VOZ */
+/* CONTROLOS DE VELOCIDADE E VOZ */
 .settings-row {
     display: flex;
     justify-content: space-between;
@@ -339,13 +250,13 @@ input[type="range"] {
     cursor: pointer;
 }
 
-/* O LIVRO DA HISTÓRIA */
+/* O LIVRO DA HISTÓRIA (ESTILO PÁGINA ANTIGA) */
 .book-container {
     background: var(--book-page);
     color: var(--book-ink);
     border-radius: 16px;
     padding: 28px 30px;
-    box-shadow:
+    box-shadow: 
         inset 12px 0 24px rgba(0, 0, 0, 0.12),
         0 15px 35px rgba(0, 0, 0, 0.5);
     border: 3px solid #5c4328;
@@ -362,7 +273,6 @@ input[type="range"] {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 10px;
 }
 
 .book-chapter {
@@ -379,7 +289,6 @@ input[type="range"] {
     font-size: 13px;
     color: #7c5832;
     font-style: italic;
-    white-space: nowrap;
 }
 
 #currentSpeaker {
@@ -402,6 +311,7 @@ input[type="range"] {
     margin-bottom: 24px;
 }
 
+/* BARRA DE PROGRESSO DO LIVRO */
 .book-footer {
     margin-top: auto;
 }
@@ -442,7 +352,7 @@ input[type="range"] {
 
 <header>
     <h1>O ESTRATEGISTA</h1>
-    <p>O Escravo que Conquistou o Mundo — Livro Interativo & Avaliador de Histórias</p>
+    <p>O Escravo que Conquistou o Mundo — Edição Ilustrada & Narrada</p>
 </header>
 
 <div class="container">
@@ -461,31 +371,21 @@ input[type="range"] {
 
         <div class="quick-jump">
             <label for="sceneSelect" style="font-size: 13px; color: var(--text-muted);">Ir para cena:</label>
-            <select id="sceneSelect" onchange="jumpToScene(this.value)"></select>
+            <select id="sceneSelect" onchange="jumpToScene(this.value)">
+                <option value="0">1. Depois da batalha</option>
+                <option value="4">2. A reunião estratégica</option>
+                <option value="8">3. O discurso aos soldados</option>
+                <option value="12">4. O recrutamento</option>
+                <option value="15">5. O sacrifício da ponte</option>
+                <option value="19">6. O rei começa a compreender</option>
+                <option value="21">7. A batalha das três frentes</option>
+                <option value="25">8. A carta do rei</option>
+                <option value="28">9. A ordem impossível</option>
+            </select>
         </div>
     </div>
 
-    <!-- EDITOR ENORME PARA ADICIONAR HISTÓRIA -->
-    <section id="storyEditorBox" class="story-editor-box">
-        <div class="editor-header">
-            <h2>📚 ADICIONAR / AVALIAR HISTÓRIA ENORME</h2>
-            <button onclick="toggleStoryEditor()" style="flex: 0; min-width: auto; padding: 8px 14px;">✕ Fechar</button>
-        </div>
-
-        <div class="editor-help">
-            <strong>Como funciona:</strong> Cola aqui um texto enorme (vários parágrafos ou linhas). O avaliador vai ler tudo, identificar quem está a falar (ex.: <code>Lorian: Olá a todos!</code>, <code>Mira: Precisamos avançar.</code> ou qualquer nome novo), criar/atualizar a etiqueta em cima da cabeça do protagonista, escolher uma das paisagens existentes automaticamente e colocar todas as novas falas no livro e nos balões!
-        </div>
-
-        <textarea id="hugeStoryInput" placeholder="Cola aqui o teu texto enorme...&#10;&#10;Exemplo:&#10;Lorian: A tempestade aproxima-se do castelo e não temos muito tempo.&#10;Mira: Os arqueiros já estão nos muros, senhor.&#10;Ronan: E se o inimigo atacar de noite pela ponte?&#10;Lorian: Então vamos surpreendê-los antes do amanhecer."></textarea>
-
-        <div class="editor-actions">
-            <button class="gold-btn" onclick="applyHugeStory()">✨ AVALIAR E APLICAR AO LIVRO</button>
-            <button onclick="fillHugeSample()">⚡ PREENCHER EXEMPLO ENORME</button>
-            <button class="danger" onclick="clearHugeInput()">🗑 LIMPAR TEXTO</button>
-        </div>
-    </section>
-
-    <!-- ÁREA PRINCIPAL: ANIMAÇÃO + LIVRO -->
+    <!-- ÁREA PRINCIPAL: ANIMAÇÃO À ESQUERDA, LIVRO À DIREITA -->
     <div class="main-stage">
 
         <!-- PALCO VISUAL -->
@@ -499,7 +399,6 @@ input[type="range"] {
                     <button onclick="resumeStory()">▶ CONTINUAR</button>
                     <button onclick="prevSegment()">⏮ ANTERIOR</button>
                     <button onclick="skipNext()">⏭ PRÓXIMO</button>
-                    <button class="story-btn" onclick="toggleStoryEditor()">➕ ADICIONA HISTÓRIA</button>
                     <button class="danger" onclick="restartStory()">↻ REINICIAR</button>
                 </div>
 
@@ -522,20 +421,20 @@ input[type="range"] {
         <div class="book-container">
             <div>
                 <div class="book-header">
-                    <span class="book-chapter" id="bookChapterTitle">Capítulo 1</span>
+                    <span class="book-chapter" id="bookChapterTitle">Crónica I</span>
                     <span class="page-number" id="pageIndicator">Página 1 / 32</span>
                 </div>
 
                 <div id="currentSpeaker">📜 NARRADOR</div>
 
                 <div id="currentText">
-                    O livro está aberto. Carrega em <strong>INICIAR</strong> para dar vida às imagens ou em <strong>➕ ADICIONA HISTÓRIA</strong> para colar um texto enorme e atualizar os protagonistas.
+                    O livro está aberto. Carrega em <strong>INICIAR</strong> para dar vida às imagens e ouvir cada personagem falar, ou escolhe uma cena no menu acima.
                 </div>
             </div>
 
             <div class="book-footer">
                 <div class="progress-label">
-                    <span>Progresso da História</span>
+                    <span>Progresso do Capítulo</span>
                     <span id="progressPercent">0%</span>
                 </div>
                 <div class="progress-area">
@@ -547,7 +446,7 @@ input[type="range"] {
     </div>
 
     <p class="note">
-        Clica em <strong>➕ ADICIONA HISTÓRIA</strong> sempre que quiseres colar um texto gigante para atualizar as falas, etiquetas e protagonistas na hora.
+        Dica: Aumenta a <strong>Velocidade</strong> ou usa o botão <strong>PRÓXIMO</strong> para ler e avançar mais depressa. Cada personagem possui tom de voz próprio quando a síntese de voz está ativa.
     </p>
 
 </div>
@@ -573,6 +472,7 @@ let currentSegment = null;
 let speechTimer = null;
 let availableVoices = [];
 
+// Carregar vozes do navegador
 function loadVoices() {
     if ("speechSynthesis" in window) {
         availableVoices = window.speechSynthesis.getVoices();
@@ -583,60 +483,32 @@ if ("speechSynthesis" in window && window.speechSynthesis.onvoiceschanged !== un
     window.speechSynthesis.onvoiceschanged = loadVoices;
 }
 
-const palettePool = [
-    { color: "#e2e8f0", cape: "#991b1b" },
-    { color: "#f472b6", cape: "#831843" },
-    { color: "#60a5fa", cape: "#1e3a8a" },
-    { color: "#fbbf24", cape: "#78350f" },
-    { color: "#34d399", cape: "#065f46" },
-    { color: "#c084fc", cape: "#4c1d95" },
-    { color: "#fb923c", cape: "#7c2d12" }
-];
-
 const characters = {
     Lorian: {
         x: 250, y: 395, color: "#e2e8f0", cape: "#991b1b",
-        visible: true, action: "idle", targetX: 250, phase: 0
+        visible: true, action: "idle", targetX: 250, phase: 0, gender: "M"
     },
     Mira: {
         x: 450, y: 395, color: "#f472b6", cape: "#831843",
-        visible: true, action: "idle", targetX: 450, phase: 1
+        visible: true, action: "idle", targetX: 450, phase: 1, gender: "F"
     },
     Ronan: {
         x: 650, y: 395, color: "#60a5fa", cape: "#1e3a8a",
-        visible: true, action: "idle", targetX: 650, phase: 2
+        visible: true, action: "idle", targetX: 650, phase: 2, gender: "M"
     },
     Seran: {
         x: 760, y: 395, color: "#fbbf24", cape: "#78350f",
-        visible: false, action: "idle", targetX: 760, phase: 3
+        visible: false, action: "idle", targetX: 760, phase: 3, gender: "M"
     },
     Aldric: {
         x: 500, y: 395, color: "#94a3b8", cape: "#334155",
-        visible: false, action: "idle", targetX: 500, phase: 4
+        visible: false, action: "idle", targetX: 500, phase: 4, gender: "M"
     },
     Edric: {
         x: 500, y: 395, color: "#facc15", cape: "#713f12",
-        visible: false, action: "idle", targetX: 500, phase: 5
+        visible: false, action: "idle", targetX: 500, phase: 5, gender: "M"
     }
 };
-
-function ensureCharacter(name) {
-    if (!name || name === "Narrador") return;
-    if (!characters[name]) {
-        const idx = Object.keys(characters).length;
-        const pal = palettePool[idx % palettePool.length];
-        characters[name] = {
-            x: 200 + (idx % 4) * 180,
-            y: 395,
-            color: pal.color,
-            cape: pal.cape,
-            visible: true,
-            action: "idle",
-            targetX: 200 + (idx % 4) * 180,
-            phase: idx
-        };
-    }
-}
 
 let soldiers = [];
 let stars = [];
@@ -648,6 +520,7 @@ let clock = 0;
 let speakingCharacter = null;
 let speechBubble = "";
 
+// Criar estrelas fixas para céus noturnos
 for (let i = 0; i < 45; i++) {
     stars.push({
         x: Math.random() * W,
@@ -658,7 +531,7 @@ for (let i = 0; i < 45; i++) {
 }
 
 /* =====================================================
-   SOLDADOS E CENAS
+   SOLDADOS
 ===================================================== */
 
 function createSoldiers(amount) {
@@ -673,6 +546,10 @@ function createSoldiers(amount) {
     }
 }
 
+/* =====================================================
+   CENAS
+===================================================== */
+
 function setScene(scene, title, people) {
     sceneBackground = scene;
     sceneTitle = title;
@@ -683,12 +560,19 @@ function setScene(scene, title, people) {
         characters[name].action = "idle";
     });
 
-    const baseX = [240, 420, 600, 760];
-    people.forEach((name, idx) => {
-        ensureCharacter(name);
+    const positions = {
+        Lorian: 280,
+        Mira: 470,
+        Ronan: 650,
+        Seran: 760,
+        Aldric: 540,
+        Edric: 500
+    };
+
+    people.forEach(name => {
         if (characters[name]) {
             characters[name].visible = true;
-            const posX = baseX[idx % baseX.length];
+            const posX = positions[name];
             characters[name].x = posX;
             characters[name].targetX = posX;
         }
@@ -714,24 +598,8 @@ function updatePeopleCount() {
     document.getElementById("peopleCount").textContent = protagonists + soldiers.length;
 }
 
-function rebuildSceneDropdown() {
-    const select = document.getElementById("sceneSelect");
-    select.innerHTML = "";
-    const seen = new Set();
-
-    story.forEach((seg, idx) => {
-        if (!seen.has(seg.sceneNumber)) {
-            seen.add(seg.sceneNumber);
-            const opt = document.createElement("option");
-            opt.value = idx;
-            opt.textContent = `${seg.sceneNumber}. ${seg.title}`;
-            select.appendChild(opt);
-        }
-    });
-}
-
 /* =====================================================
-   DESENHO DO CENÁRIO E PERSONAGENS
+   DESENHO DO CENÁRIO (ILUSTRADO)
 ===================================================== */
 
 function drawBackground() {
@@ -755,12 +623,14 @@ function drawBackground() {
         groundTop = "#3a2618"; groundBottom = "#1f140c";
     }
 
+    // Gradiente do Céu
     const skyGrad = ctx.createLinearGradient(0, 0, 0, 410);
     skyGrad.addColorStop(0, skyTop);
     skyGrad.addColorStop(1, skyBottom);
     ctx.fillStyle = skyGrad;
     ctx.fillRect(0, 0, W, H);
 
+    // Estrelas e Lua
     if (sceneBackground === "night" || sceneBackground === "tower") {
         stars.forEach(st => {
             const alpha = 0.4 + Math.sin(clock * 2 + st.twinkle) * 0.4;
@@ -770,6 +640,7 @@ function drawBackground() {
             ctx.fill();
         });
 
+        // Halo da lua
         ctx.fillStyle = "rgba(254, 240, 138, 0.12)";
         ctx.beginPath();
         ctx.arc(800, 95, 55, 0, Math.PI * 2);
@@ -781,6 +652,7 @@ function drawBackground() {
         ctx.fill();
     }
 
+    // Montanhas ao fundo com profundidade
     ctx.fillStyle = "rgba(15, 23, 42, 0.55)";
     ctx.beginPath();
     ctx.moveTo(0, 330);
@@ -794,12 +666,14 @@ function drawBackground() {
     ctx.lineTo(0, 420);
     ctx.fill();
 
+    // Chão com gradiente
     const groundGrad = ctx.createLinearGradient(0, 405, 0, H);
     groundGrad.addColorStop(0, groundTop);
     groundGrad.addColorStop(1, groundBottom);
     ctx.fillStyle = groundGrad;
     ctx.fillRect(0, 405, W, 135);
 
+    // Linha do horizonte dourada subtil
     ctx.strokeStyle = "rgba(212, 175, 55, 0.25)";
     ctx.lineWidth = 2;
     ctx.beginPath();
@@ -807,18 +681,21 @@ function drawBackground() {
     ctx.lineTo(W, 405);
     ctx.stroke();
 
+    // Castelo
     if (sceneBackground === "castle") {
         ctx.fillStyle = "#475569";
         ctx.fillRect(650, 190, 180, 215);
         ctx.fillRect(630, 160, 45, 245);
         ctx.fillRect(805, 160, 45, 245);
 
+        // Janelas iluminadas
         ctx.fillStyle = "#fbbf24";
         ctx.fillRect(725, 240, 25, 40);
         ctx.fillRect(645, 200, 14, 24);
         ctx.fillRect(820, 200, 14, 24);
     }
 
+    // Torre
     if (sceneBackground === "tower") {
         ctx.fillStyle = "#334155";
         ctx.fillRect(380, 80, 190, 325);
@@ -828,6 +705,7 @@ function drawBackground() {
         ctx.fillRect(360, 72, 230, 14);
     }
 
+    // Ponte
     if (sceneBackground === "bridge") {
         ctx.fillStyle = "#78350f";
         ctx.fillRect(0, 355, 960, 50);
@@ -837,6 +715,7 @@ function drawBackground() {
         }
     }
 
+    // Mesa do Mapa
     if (sceneBackground === "map") {
         ctx.fillStyle = "#d6b88d";
         ctx.fillRect(310, 295, 340, 110);
@@ -855,6 +734,10 @@ function drawBackground() {
     }
 }
 
+/* =====================================================
+   DESENHAR UMA PERSONAGEM
+===================================================== */
+
 function drawCharacter(name, c) {
     if (!c.visible) return;
 
@@ -870,18 +753,21 @@ function drawCharacter(name, c) {
 
     const headY = y - 105 + bounce;
 
+    // Aura se estiver a falar
     if (speakingCharacter === name) {
-        ctx.fillStyle = "rgba(212, 175, 55, 0.22)";
+        ctx.fillStyle = "rgba(212, 175, 55, 0.18)";
         ctx.beginPath();
-        ctx.ellipse(x, y + 2, 44, 12, 0, 0, Math.PI * 2);
+        ctx.ellipse(x, y + 2, 42, 12, 0, 0, Math.PI * 2);
         ctx.fill();
     }
 
+    // Sombra no chão
     ctx.fillStyle = "rgba(0,0,0,0.35)";
     ctx.beginPath();
     ctx.ellipse(x, y + 2, 28, 7, 0, 0, Math.PI * 2);
     ctx.fill();
 
+    // Capa esvoaçante
     ctx.fillStyle = c.cape || "#1e293b";
     ctx.beginPath();
     ctx.moveTo(x - 14, y - 88 + bounce);
@@ -890,6 +776,7 @@ function drawCharacter(name, c) {
     ctx.lineTo(x + 14, y - 88 + bounce);
     ctx.fill();
 
+    // Pernas
     ctx.strokeStyle = "#1e293b";
     ctx.lineWidth = 9;
     ctx.lineCap = "round";
@@ -906,11 +793,13 @@ function drawCharacter(name, c) {
     ctx.lineTo(x + 10 - legMove, y);
     ctx.stroke();
 
+    // Túnica / Armadura
     ctx.fillStyle = c.color;
     ctx.beginPath();
     ctx.roundRect(x - 16, y - 90 + bounce, 32, 48, 6);
     ctx.fill();
 
+    // Braços
     let armAngle = Math.sin(clock * 3 + c.phase) * 0.08;
     if (c.action === "raise") armAngle = -1.2;
     if (c.action === "attack") armAngle = -1.4;
@@ -929,36 +818,54 @@ function drawCharacter(name, c) {
     ctx.lineTo(x + 29, y - 56 - armAngle * 12);
     ctx.stroke();
 
+    // Cabeça
     ctx.fillStyle = "#eab693";
     ctx.beginPath();
     ctx.arc(x, headY, 19, 0, Math.PI * 2);
     ctx.fill();
 
-    ctx.fillStyle = "#1e1b18";
-    ctx.beginPath();
-    ctx.arc(x, headY - 5, 19, Math.PI, Math.PI * 2);
-    ctx.fill();
+    // Cabelo ou Coroa (Edric)
+    if (name === "Edric") {
+        ctx.fillStyle = "#facc15";
+        ctx.beginPath();
+        ctx.moveTo(x - 16, headY - 14);
+        ctx.lineTo(x - 10, headY - 26);
+        ctx.lineTo(x, headY - 18);
+        ctx.lineTo(x + 10, headY - 26);
+        ctx.lineTo(x + 16, headY - 14);
+        ctx.fill();
+    } else {
+        ctx.fillStyle = name === "Mira" ? "#4a1d24" : "#1e1b18";
+        ctx.beginPath();
+        ctx.arc(x, headY - 5, 19, Math.PI, Math.PI * 2);
+        ctx.fill();
+    }
 
+    // Olhos
     ctx.fillStyle = "#111827";
     ctx.fillRect(x - 7, headY - 2, 3, 3);
     ctx.fillRect(x + 5, headY - 2, 3, 3);
 
-    // ETIQUETA COM O NOME POR CIMA DA CABEÇA
-    const labelWidth = Math.max(72, name.length * 9 + 20);
-    ctx.fillStyle = speakingCharacter === name ? "#8b261d" : "rgba(15, 23, 42, 0.92)";
+    // Placa com Nome
+    const labelWidth = Math.max(70, name.length * 9 + 18);
+    ctx.fillStyle = speakingCharacter === name ? "#8b261d" : "rgba(15, 23, 42, 0.9)";
     ctx.beginPath();
-    ctx.roundRect(x - labelWidth / 2, headY - 54, labelWidth, 25, 7);
+    ctx.roundRect(x - labelWidth / 2, headY - 52, labelWidth, 24, 6);
     ctx.fill();
 
     ctx.strokeStyle = speakingCharacter === name ? "#facc15" : c.color;
-    ctx.lineWidth = 1.6;
+    ctx.lineWidth = 1.5;
     ctx.stroke();
 
     ctx.fillStyle = "#ffffff";
     ctx.font = "bold 13px Inter, sans-serif";
     ctx.textAlign = "center";
-    ctx.fillText(name, x, headY - 37);
+    ctx.fillText(name, x, headY - 36);
 }
+
+/* =====================================================
+   DESENHAR SOLDADOS
+===================================================== */
 
 function drawSoldiers() {
     soldiers.forEach(s => {
@@ -966,11 +873,13 @@ function drawSoldiers() {
         ctx.fillStyle = s.color;
         ctx.fillRect(s.x - 7, s.y - 28 + bounce, 14, 27);
 
+        // Capacete/Cabeça
         ctx.fillStyle = "#cbd5e1";
         ctx.beginPath();
         ctx.arc(s.x, s.y - 37 + bounce, 8, 0, Math.PI * 2);
         ctx.fill();
 
+        // Lança
         ctx.strokeStyle = "#94a3b8";
         ctx.lineWidth = 2;
         ctx.beginPath();
@@ -980,14 +889,18 @@ function drawSoldiers() {
     });
 }
 
+/* =====================================================
+   BALÃO DE FALA ESTILIZADO
+===================================================== */
+
 function drawSpeechBubble() {
     if (!speechBubble || !speakingCharacter) return;
 
     const c = characters[speakingCharacter];
     if (!c || !c.visible) return;
 
-    const x = Math.max(195, Math.min(W - 195, c.x));
-    const y = c.y - 182;
+    const x = Math.max(190, Math.min(W - 190, c.x));
+    const y = c.y - 178;
 
     const text = speechBubble.length > 56
         ? speechBubble.substring(0, 53) + "..."
@@ -996,6 +909,7 @@ function drawSpeechBubble() {
     ctx.font = "600 14px Lora, serif";
     const width = Math.min(360, ctx.measureText(text).width + 32);
 
+    // Caixa arredondada
     ctx.fillStyle = "#f4ebd8";
     ctx.beginPath();
     ctx.roundRect(x - width / 2, y - 28, width, 38, 10);
@@ -1005,6 +919,7 @@ function drawSpeechBubble() {
     ctx.lineWidth = 2;
     ctx.stroke();
 
+    // Ponteiro do balão
     ctx.fillStyle = "#f4ebd8";
     ctx.beginPath();
     ctx.moveTo(c.x - 6, y + 10);
@@ -1017,14 +932,22 @@ function drawSpeechBubble() {
     ctx.fillText(text, x, y - 4);
 }
 
+/* =====================================================
+   LOOP DE ANIMAÇÃO
+===================================================== */
+
 function updateCharacters() {
     Object.keys(characters).forEach(name => {
         const c = characters[name];
         if (!c.visible) return;
 
         const speed = c.action === "run" ? 5.5 : 2.5;
-        if (c.x < c.targetX) c.x = Math.min(c.x + speed, c.targetX);
-        else if (c.x > c.targetX) c.x = Math.max(c.x - speed, c.targetX);
+
+        if (c.x < c.targetX) {
+            c.x = Math.min(c.x + speed, c.targetX);
+        } else if (c.x > c.targetX) {
+            c.x = Math.max(c.x - speed, c.targetX);
+        }
 
         if (c.action === "attack") {
             c.targetX = Math.min(c.x + 45, 880);
@@ -1053,7 +976,7 @@ function render() {
 render();
 
 /* =====================================================
-   MOVIMENTOS E ROTEIRO INICIAL
+   MOVIMENTOS DAS PERSONAGENS
 ===================================================== */
 
 function applyAction(segment) {
@@ -1082,7 +1005,11 @@ function applyAction(segment) {
     }
 }
 
-let story = [
+/* =====================================================
+   ROTEIRO DA HISTÓRIA (32 PÁGINAS)
+===================================================== */
+
+const story = [
     { sceneNumber: 1, scene: "battle", title: "Depois da batalha", people: ["Lorian", "Mira", "Ronan"], soldiers: 8, speaker: "Narrador", text: "A batalha tinha terminado, mas Lorian não comemorava. Quinhentos homens tinham enfrentado um exército que deveria esmagá-los. Tinham vencido, mas a carta encontrada na caixa deixara uma pergunta sem resposta. Quem estava realmente a controlar aquela guerra?", action: {actor:"Lorian", type:"walk", x:350} },
     { sceneNumber: 1, scene: "battle", title: "Depois da batalha", people: ["Lorian", "Mira", "Ronan"], soldiers: 8, speaker: "Lorian", text: "Isto não foi uma vitória normal. Alguém queria que estivéssemos exatamente aqui.", action: {actor:"Lorian", type:"raise"} },
     { sceneNumber: 1, scene: "battle", title: "Depois da batalha", people: ["Lorian", "Mira", "Ronan"], soldiers: 8, speaker: "Ronan", text: "Queres dizer que fomos conduzidos até esta batalha?", action: {actor:"Ronan", type:"walk", x:390} },
@@ -1126,141 +1053,7 @@ let story = [
 ];
 
 /* =====================================================
-   AVALIADOR DE TEXTO ENORME (ADICIONA HISTÓRIA)
-===================================================== */
-
-function toggleStoryEditor() {
-    document.getElementById("storyEditorBox").classList.toggle("open");
-}
-
-function clearHugeInput() {
-    document.getElementById("hugeStoryInput").value = "";
-}
-
-function fillHugeSample() {
-    document.getElementById("hugeStoryInput").value =
-`Lorian: O silêncio antes da tempestade no campo de batalha sempre traz um aviso.
-Mira: Os batedores viram tochas a mover-se junto à ponte antiga.
-Ronan: Se cruzarem a ponte durante a noite, vão tentar cercar o nosso flanco esquerdo.
-Seran: Deixem a vanguarda comigo. Nenhum inimigo passa por aquela ponte sem pagar o preço.
-Edric: Lorian pensou três passos à frente de todos os generais do reino.
-Aldric: O documento escondido na torre revela quem realmente escreveu este destino.
-Lorian: Agora não lutamos apenas por terras. Lutamos para quebrar o plano de quem nos controla.`;
-}
-
-function detectBackground(text) {
-    const t = text.toLowerCase();
-    if (t.includes("ponte")) return { bg: "bridge", title: "Na ponte" };
-    if (t.includes("torre")) return { bg: "tower", title: "Na torre" };
-    if (t.includes("castelo") || t.includes("rei") || t.includes("trono")) return { bg: "castle", title: "No castelo" };
-    if (t.includes("noite") || t.includes("lua") || t.includes("estrelas") || t.includes("madrugada")) return { bg: "night", title: "Sob a noite" };
-    if (t.includes("mapa") || t.includes("plano") || t.includes("estratégia")) return { bg: "map", title: "Mesa de estratégia" };
-    return { bg: "battle", title: "Campo de batalha" };
-}
-
-function parseLineToSegment(rawLine, index, currentSceneNum) {
-    let line = rawLine.trim();
-    if (!line) return null;
-
-    let speaker = "Narrador";
-    let speechText = line;
-
-    // Deteta padrões como "Nome: fala" ou "Nome — fala" ou "Nome - fala"
-    const match = line.match(/^([A-Za-zÀ-ÿ]{2,20})\s*(?::|—|-)\s*(.+)$/);
-    if (match) {
-        const candidate = match[1].trim();
-        const formattedName = candidate.charAt(0).toUpperCase() + candidate.slice(1);
-        if (formattedName.toLowerCase() !== "narrador") {
-            speaker = formattedName;
-            ensureCharacter(speaker);
-        }
-        speechText = match[2].trim();
-    } else {
-        // Verifica se alguma personagem conhecida é mencionada no início
-        const knownNames = Object.keys(characters);
-        for (const name of knownNames) {
-            const regex = new RegExp(`^${name}\\s+(?:disse|falou|respondeu|gritou|murmurou|perguntou)\\s*:?\\s*(.+)$`, "i");
-            const m2 = line.match(regex);
-            if (m2) {
-                speaker = name;
-                ensureCharacter(speaker);
-                speechText = m2[1].trim();
-                break;
-            }
-        }
-    }
-
-    const env = detectBackground(speechText);
-    const activePeople = speaker !== "Narrador"
-        ? Array.from(new Set(["Lorian", speaker])).slice(0, 4)
-        : ["Lorian", "Mira", "Ronan"];
-
-    const actions = ["walk", "raise", "attack", "run"];
-    const chosenAction = speaker !== "Narrador"
-        ? { actor: speaker, type: actions[index % actions.length], x: 260 + ((index * 95) % 520) }
-        : { actor: "Lorian", type: "walk", x: 320 + ((index * 70) % 420) };
-
-    return {
-        sceneNumber: currentSceneNum,
-        scene: env.bg,
-        title: `${env.title} (Parte ${currentSceneNum})`,
-        people: activePeople,
-        soldiers: (index % 3) * 6 + 4,
-        speaker: speaker,
-        text: speechText,
-        action: chosenAction
-    };
-}
-
-function applyHugeStory() {
-    const rawText = document.getElementById("hugeStoryInput").value.trim();
-    if (!rawText) {
-        alert("Cola ou escreve um texto enorme antes de aplicar!");
-        return;
-    }
-
-    // Divide por quebras de linha ou frases longas se for um bloco gigante
-    let chunks = rawText
-        .split(/\r?\n+/)
-        .map(l => l.trim())
-        .filter(Boolean);
-
-    if (chunks.length === 1 && rawText.length > 260) {
-        chunks = rawText.match(/[^.!?]+[.!?]+(?:\s|$)/g) || [rawText];
-    }
-
-    const parsedSegments = [];
-    let sceneCounter = 1;
-
-    chunks.forEach((chunk, idx) => {
-        if (idx > 0 && idx % 4 === 0) {
-            sceneCounter++;
-        }
-        const seg = parseLineToSegment(chunk, idx, sceneCounter);
-        if (seg) parsedSegments.push(seg);
-    });
-
-    if (parsedSegments.length === 0) return;
-
-    // Substitui o roteiro pelas novas falas avaliadas e atualiza tudo
-    story = parsedSegments;
-    rebuildSceneDropdown();
-
-    clearTimeout(speechTimer);
-    if ("speechSynthesis" in window) window.speechSynthesis.cancel();
-
-    currentIndex = 0;
-    currentSegment = story[0];
-    running = true;
-    paused = false;
-    speechToken++;
-
-    document.getElementById("storyEditorBox").classList.remove("open");
-    speakSegment(story[0], speechToken);
-}
-
-/* =====================================================
-   LEITURA, VOZES E CONTROLO
+   LEITURA, VOZES E CONTROLO RÁPIDO
 ===================================================== */
 
 function updateSpeed(val) {
@@ -1294,6 +1087,7 @@ function configureVoice(utterance, speaker) {
         }
     }
 
+    // Diferenciação de tom por personagem
     if (speaker === "Narrador") utterance.pitch = 1.0;
     else if (speaker === "Mira") utterance.pitch = 1.25;
     else if (speaker === "Edric" || speaker === "Seran") utterance.pitch = 0.78;
@@ -1330,6 +1124,7 @@ function speakSegment(segment, token) {
 
         window.speechSynthesis.speak(utterance);
     } else {
+        // Modo leitura rápida sem voz
         const duration = Math.max(1800, (segment.text.length * 48) / speechRate);
         speechTimer = setTimeout(() => {
             if (token !== speechToken || paused || !running) return;
@@ -1434,7 +1229,7 @@ function restartStory() {
     document.getElementById("progress").style.width = "0%";
     document.getElementById("progressPercent").textContent = "0%";
 
-    setScene(story[0].scene, story[0].title, story[0].people);
+    setScene("battle", "Depois da batalha", ["Lorian", "Mira", "Ronan"]);
 }
 
 function finishStory() {
@@ -1454,10 +1249,8 @@ function finishStory() {
 /* =====================================================
    INICIALIZAÇÃO
 ===================================================== */
-rebuildSceneDropdown();
 currentSegment = story[0];
-setScene(story[0].scene, story[0].title, story[0].people);
-document.getElementById("pageIndicator").textContent = `Página 1 / ${story.length}`;
+setScene("battle", "Depois da batalha", ["Lorian", "Mira", "Ronan"]);
 </script>
 
 </body>
