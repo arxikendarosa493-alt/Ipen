@@ -1,1491 +1,914 @@
 <!DOCTYPE html>
-<html lang="pt">
+<html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>O Estrategista — Livro Interativo</title>
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Lora:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Livro Vivo 3D — História Interativa</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
+    body, html { width: 100%; height: 100%; overflow: hidden; background: #0b0f19; color: #fff; }
 
-<style>
-:root {
-    --bg-dark: #0b0e14;
-    --panel-bg: #141923;
-    --book-page: #f4ebd8;
-    --book-ink: #29221c;
-    --gold: #d4af37;
-    --gold-soft: rgba(212, 175, 55, 0.25);
-    --text-light: #e2e8f0;
-    --text-muted: #94a3b8;
-}
-
-* {
-    box-sizing: border-box;
-}
-
-html, body {
-    margin: 0;
-    padding: 0;
-    background: radial-gradient(circle at top, #182030 0%, var(--bg-dark) 100%);
-    color: var(--text-light);
-    font-family: 'Inter', sans-serif;
-    min-height: 100vh;
-    overscroll-behavior-y: none;
-    touch-action: manipulation;
-}
-
-/* BARRA SUPERIOR COM BOTÃO DE FECHAR TUDO */
-.top-bar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 14px 20px;
-    background: rgba(12, 16, 24, 0.94);
-    border-bottom: 1px solid var(--gold-soft);
-    position: sticky;
-    top: 0;
-    z-index: 50;
-}
-
-.brand {
-    display: flex;
-    flex-direction: column;
-}
-
-.brand h1 {
-    margin: 0;
-    font-family: 'Cinzel', serif;
-    font-size: 22px;
-    letter-spacing: 2px;
-    color: var(--gold);
-}
-
-.brand span {
-    font-size: 12px;
-    color: var(--text-muted);
-}
-
-.close-all-btn {
-    background: rgba(239, 68, 68, 0.2);
-    border: 1px solid rgba(239, 68, 68, 0.5);
-    color: #fecaca;
-    padding: 10px 16px;
-    border-radius: 10px;
-    font-weight: 700;
-    font-size: 13px;
-    cursor: pointer;
-    transition: 0.2s ease;
-}
-
-.close-all-btn:hover {
-    background: rgba(239, 68, 68, 0.35);
-}
-
-/* ABAS PRINCIPAIS */
-.main-tabs {
-    max-width: 1280px;
-    margin: 20px auto 0;
-    padding: 0 20px;
-    display: grid;
-    grid-template-columns: 1.3fr 1fr;
-    gap: 14px;
-}
-
-@media (max-width: 720px) {
-    .main-tabs {
-        grid-template-columns: 1fr;
+    /* Camada de Texto no Fundo (Rola continuamente) */
+    #background-text-layer {
+      position: fixed; inset: 0; z-index: 1; padding: 90px 12% 180px;
+      overflow-y: auto; background: radial-gradient(circle at center, #162038 0%, #090d16 100%);
+      transition: opacity 0.4s ease;
     }
-}
-
-.tab-btn {
-    padding: 15px 18px;
-    border-radius: 12px;
-    border: 2px solid var(--gold-soft);
-    background: #151c29;
-    color: var(--text-light);
-    font-weight: 700;
-    font-size: 14px;
-    letter-spacing: 0.5px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-}
-
-.tab-btn.add-text-tab {
-    background: linear-gradient(135deg, #b45309, #d4af37);
-    color: #0f172a;
-    border-color: #fde047;
-    box-shadow: 0 6px 20px rgba(212, 175, 55, 0.25);
-}
-
-.tab-btn.active {
-    outline: 3px solid rgba(250, 204, 21, 0.55);
-    transform: translateY(-1px);
-}
-
-/* CONTENTOR PRINCIPAL */
-.container {
-    width: 100%;
-    max-width: 1280px;
-    margin: 20px auto 0;
-    padding: 0 20px 60px;
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
-}
-
-/* ABA ADICIONAR TEXTO (GRANDE + ZOOM PRÓPRIO) */
-.add-text-panel {
-    display: none;
-    background: var(--panel-bg);
-    border: 2px solid var(--gold);
-    border-radius: 16px;
-    padding: 24px;
-    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.55);
-}
-
-.add-text-panel.open {
-    display: block;
-}
-
-.panel-top-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 12px;
-    margin-bottom: 16px;
-}
-
-.panel-top-row h2 {
-    margin: 0;
-    font-family: 'Cinzel', serif;
-    font-size: 21px;
-    color: var(--gold);
-}
-
-.zoom-toolbar {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    background: #0d121b;
-    padding: 8px 12px;
-    border-radius: 10px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.zoom-toolbar button {
-    padding: 7px 12px;
-    border-radius: 8px;
-    border: 1px solid rgba(255, 255, 255, 0.14);
-    background: #222c40;
-    color: #fff;
-    font-weight: 700;
-    cursor: pointer;
-}
-
-.zoom-toolbar span {
-    font-size: 13px;
-    font-weight: 700;
-    color: var(--gold);
-    min-width: 48px;
-    text-align: center;
-}
-
-.big-text-box {
-    width: 100%;
-    min-height: 380px;
-    max-height: 70vh;
-    padding: 20px;
-    border-radius: 14px;
-    border: 1px solid rgba(212, 175, 55, 0.35);
-    background: #0c1018;
-    color: #f8fafc;
-    font-family: 'Lora', serif;
-    font-size: 18px;
-    line-height: 1.75;
-    resize: vertical;
-    outline: none;
-    overscroll-behavior: contain;
-    touch-action: pan-y;
-}
-
-.big-text-box:focus {
-    border-color: var(--gold);
-}
-
-.text-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-    margin-top: 16px;
-}
-
-/* ÁREA DA ANIMAÇÃO E LIVRO */
-.stage-and-book-wrapper.hidden-all {
-    display: none;
-}
-
-.status-bar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 12px;
-    background: var(--panel-bg);
-    padding: 14px 20px;
-    border-radius: 12px;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.badge {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 14px;
-    color: var(--text-muted);
-}
-
-.badge strong {
-    color: var(--text-light);
-}
-
-#peopleCount {
-    background: rgba(16, 185, 129, 0.15);
-    color: #34d399;
-    padding: 2px 10px;
-    border-radius: 20px;
-    font-weight: bold;
-    border: 1px solid rgba(16, 185, 129, 0.3);
-}
-
-.main-stage {
-    display: grid;
-    grid-template-columns: 1.4fr 1fr;
-    gap: 24px;
-    align-items: stretch;
-}
-
-@media (max-width: 960px) {
-    .main-stage {
-        grid-template-columns: 1fr;
+    #background-text-content {
+      max-width: 820px; margin: 0 auto; font-size: 1.35rem; line-height: 1.9;
+      color: rgba(255, 255, 255, 0.35);
     }
-}
+    .segment-span { transition: all 0.3s ease; padding: 2px 6px; border-radius: 6px; }
+    .segment-span.active {
+      color: #ffffff; background: rgba(245, 158, 11, 0.22);
+      box-shadow: 0 0 15px rgba(245, 158, 11, 0.2);
+    }
 
-.canvas-wrapper {
-    position: relative;
-    border-radius: 16px;
-    overflow: hidden;
-    border: 2px solid var(--gold-soft);
-    background: #0f1520;
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
-    display: flex;
-    flex-direction: column;
-}
+    /* Palco 3D por cima do texto */
+    #canvas-container {
+      position: fixed; inset: 0; z-index: 2; transition: opacity 0.45s ease, visibility 0.45s;
+    }
+    #canvas-container.hidden-stage { opacity: 0; pointer-events: none; visibility: hidden; }
 
-canvas {
-    display: block;
-    width: 100%;
-    height: auto;
-    aspect-ratio: 16 / 9;
-}
+    /* Balões 3D Projetados na Tela */
+    #bubbles-layer { position: fixed; inset: 0; z-index: 3; pointer-events: none; }
+    .speech-bubble {
+      position: absolute; transform: translate(-50%, -100%);
+      background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 14px;
+      padding: 10px 14px; max-width: 260px; box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+      transition: opacity 0.25s ease;
+    }
+    .speech-bubble::after {
+      content: ''; position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%);
+      border-width: 8px 8px 0; border-style: solid;
+      border-color: rgba(15, 23, 42, 0.9) transparent transparent transparent;
+    }
+    .bubble-name {
+      display: inline-block; font-size: 0.75rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.5px; padding: 2px 8px; border-radius: 6px; margin-bottom: 5px;
+    }
+    .bubble-text { font-size: 0.92rem; line-height: 1.35; color: #f8fafc; }
 
-/* CONTROLOS COM BOTÃO PAUSAR CENTRALIZADO */
-.controls-panel {
-    background: #131822;
-    padding: 16px;
-    border-top: 1px solid rgba(255, 255, 255, 0.08);
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
+    /* Barra Superior */
+    header {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 10;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 14px 22px; background: linear-gradient(to bottom, rgba(8,12,22,0.88), transparent);
+    }
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .brand-title { font-size: 1.2rem; font-weight: 800; color: #fbbf24; }
+    .page-badge {
+      background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.18);
+      padding: 4px 12px; border-radius: 999px; font-size: 0.82rem;
+    }
+    .scene-tag {
+      background: rgba(16, 185, 129, 0.2); border: 1px solid rgba(16, 185, 129, 0.45);
+      color: #6ee7b7; padding: 4px 10px; border-radius: 999px; font-size: 0.78rem;
+    }
 
-.controls-row {
-    display: grid;
-    grid-template-columns: 1fr 1.35fr 1fr;
-    gap: 10px;
-    align-items: stretch;
-}
+    /* Botão 3 Pontinhos e Dropdown */
+    .menu-wrapper { position: relative; }
+    #dots-btn {
+      width: 42px; height: 42px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.25);
+      background: rgba(15, 23, 42, 0.85); color: #fff; font-size: 1.4rem; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; backdrop-filter: blur(8px);
+    }
+    #dots-btn:hover { background: rgba(245, 158, 11, 0.3); border-color: #fbbf24; }
+    #dropdown-menu {
+      position: absolute; top: 50px; right: 0; width: 245px;
+      background: rgba(15, 23, 42, 0.96); border: 1px solid rgba(255,255,255,0.18);
+      border-radius: 14px; padding: 8px; display: none; flex-direction: column; gap: 4px;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.65); backdrop-filter: blur(12px);
+    }
+    #dropdown-menu.open { display: flex; }
+    .menu-item {
+      background: transparent; border: none; color: #f1f5f9; text-align: left;
+      padding: 10px 12px; border-radius: 9px; font-size: 0.9rem; cursor: pointer;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .menu-item:hover { background: rgba(255,255,255,0.1); }
 
-@media (max-width: 640px) {
+    /* HUD Inferior */
+    #hud-bottom {
+      position: fixed; bottom: 0; left: 0; right: 0; z-index: 10;
+      padding: 16px 24px 20px;
+      background: linear-gradient(to top, rgba(6, 9, 18, 0.96) 65%, transparent);
+      display: flex; flex-direction: column; gap: 12px;
+    }
+    #narration-box {
+      max-width: 900px; margin: 0 auto; width: 100%;
+      background: rgba(15, 23, 42, 0.82); border: 1px solid rgba(255,255,255,0.14);
+      border-radius: 14px; padding: 10px 16px; display: flex; align-items: center; gap: 14px;
+      backdrop-filter: blur(10px);
+    }
+    .narrator-avatar {
+      width: 44px; height: 44px; border-radius: 50%; flex-shrink: 0;
+      background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+      display: flex; align-items: center; justify-content: center; font-size: 1.3rem;
+      border: 2px solid #93c5fd;
+    }
+    #speaker-label { font-size: 0.78rem; font-weight: 700; color: #fbbf24; text-transform: uppercase; }
+    #subtitle-text { font-size: 0.96rem; color: #e2e8f0; margin-top: 2px; }
+
+    /* Controles e Barra Arrastável */
     .controls-row {
-        grid-template-columns: 1fr;
+      max-width: 900px; margin: 0 auto; width: 100%;
+      display: flex; align-items: center; justify-content: center; gap: 14px;
     }
-}
+    .ctrl-btn {
+      background: rgba(30, 41, 59, 0.9); border: 1px solid rgba(255,255,255,0.2);
+      color: #fff; padding: 8px 18px; border-radius: 999px; font-size: 0.88rem;
+      font-weight: 600; cursor: pointer; transition: 0.2s;
+    }
+    .ctrl-btn:hover { background: #f59e0b; color: #0f172a; border-color: #fbbf24; }
+    .ctrl-btn.primary { background: #fbbf24; color: #0f172a; border-color: #fbbf24; }
 
-button.ctrl-btn {
-    padding: 13px 14px;
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    border-radius: 10px;
-    background: #232d42;
-    color: white;
-    font-weight: 700;
-    font-size: 13px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
+    .progress-row {
+      max-width: 900px; margin: 0 auto; width: 100%;
+      display: flex; align-items: center; gap: 12px; font-size: 0.82rem; color: #cbd5e1;
+    }
+    #progress-slider {
+      flex: 1; -webkit-appearance: none; height: 7px; border-radius: 999px;
+      background: rgba(255,255,255,0.2); outline: none; cursor: pointer;
+    }
+    #progress-slider::-webkit-slider-thumb {
+      -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%;
+      background: #fbbf24; border: 2px solid #fff; cursor: grab;
+    }
 
-button.ctrl-btn:hover {
-    background: #31405e;
-}
-
-button.pause-center {
-    background: linear-gradient(135deg, #d97706, #f59e0b);
-    color: #111827;
-    border: 2px solid #fde68a;
-    font-size: 14px;
-    box-shadow: 0 4px 14px rgba(245, 158, 11, 0.35);
-}
-
-button.primary-btn {
-    background: linear-gradient(135deg, #059669, #10b981);
-    border: none;
-}
-
-button.danger-btn {
-    background: rgba(239, 68, 68, 0.2);
-    border-color: rgba(239, 68, 68, 0.45);
-    color: #fca5a5;
-}
-
-/* LIVRO DA HISTÓRIA */
-.book-container {
-    background: var(--book-page);
-    color: var(--book-ink);
-    border-radius: 16px;
-    padding: 28px 30px;
-    box-shadow:
-        inset 12px 0 24px rgba(0, 0, 0, 0.12),
-        0 15px 35px rgba(0, 0, 0, 0.5);
-    border: 3px solid #5c4328;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-}
-
-.book-header {
-    border-bottom: 2px solid rgba(92, 67, 40, 0.25);
-    padding-bottom: 12px;
-    margin-bottom: 18px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 10px;
-}
-
-.book-chapter {
-    font-family: 'Cinzel', serif;
-    font-size: 13px;
-    font-weight: 700;
-    color: #7c5832;
-    text-transform: uppercase;
-}
-
-.page-number {
-    font-family: 'Lora', serif;
-    font-size: 13px;
-    color: #7c5832;
-    font-style: italic;
-}
-
-#currentSpeaker {
-    font-family: 'Cinzel', serif;
-    font-size: 18px;
-    font-weight: 700;
-    color: #8b261d;
-    margin-bottom: 12px;
-}
-
-#currentText {
-    font-family: 'Lora', serif;
-    font-size: 18px;
-    line-height: 1.75;
-    color: #1f1914;
-    min-height: 165px;
-    margin-bottom: 24px;
-}
-
-.progress-label {
-    display: flex;
-    justify-content: space-between;
-    font-size: 12px;
-    color: #6b533b;
-    margin-bottom: 6px;
-    font-weight: 600;
-}
-
-.progress-area {
-    background: rgba(92, 67, 40, 0.2);
-    height: 8px;
-    border-radius: 10px;
-    overflow: hidden;
-}
-
-#progress {
-    width: 0%;
-    height: 100%;
-    background: linear-gradient(90deg, #8b261d, #d4af37);
-    transition: width 0.3s ease;
-}
-
-/* SECÇÃO INFERIOR PARA CONFIGURAÇÕES (AO BAIXAR A TELA) */
-.settings-section {
-    background: var(--panel-bg);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 16px;
-    padding: 24px;
-    margin-top: 8px;
-}
-
-.settings-section h3 {
-    margin: 0 0 16px;
-    font-family: 'Cinzel', serif;
-    font-size: 18px;
-    color: var(--gold);
-}
-
-.settings-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 16px;
-    align-items: center;
-}
-
-.setting-card {
-    background: #0e131d;
-    padding: 14px 16px;
-    border-radius: 12px;
-    border: 1px solid rgba(255, 255, 255, 0.06);
-}
-
-select, input[type="range"] {
-    width: 100%;
-    margin-top: 8px;
-    accent-color: var(--gold);
-}
-
-select {
-    background: #1c2434;
-    color: var(--text-light);
-    border: 1px solid var(--gold-soft);
-    padding: 9px 12px;
-    border-radius: 8px;
-}
-</style>
+    /* Modal Editor de Texto e Páginas */
+    #editor-modal {
+      position: fixed; inset: 0; z-index: 30; background: rgba(0,0,0,0.75);
+      backdrop-filter: blur(6px); display: none; align-items: center; justify-content: center; padding: 20px;
+    }
+    #editor-modal.open { display: flex; }
+    .modal-card {
+      background: #111827; border: 1px solid rgba(255,255,255,0.18); border-radius: 18px;
+      width: 100%; max-width: 640px; padding: 22px; display: flex; flex-direction: column; gap: 14px;
+    }
+    .modal-card h2 { color: #fbbf24; font-size: 1.2rem; }
+    .modal-card input, .modal-card textarea {
+      width: 100%; background: #1f2937; border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 10px; color: #fff; padding: 10px 12px; font-size: 0.95rem;
+    }
+    .modal-card textarea { height: 200px; resize: vertical; line-height: 1.5; }
+    .pages-bar { display: flex; gap: 8px; flex-wrap: wrap; }
+    .page-chip {
+      padding: 5px 12px; border-radius: 8px; background: #1f2937; border: 1px solid rgba(255,255,255,0.15);
+      color: #cbd5e1; cursor: pointer; font-size: 0.82rem;
+    }
+    .page-chip.active { background: #fbbf24; color: #0f172a; font-weight: 700; }
+    .modal-actions { display: flex; justify-content: flex-end; gap: 10px; }
+  </style>
 </head>
-
 <body>
 
-<!-- TOPO COM BOTÃO PARA FECHAR TUDO -->
-<div class="top-bar">
+  <!-- Texto no Fundo (pode ser revelado limpando as imagens 3D) -->
+  <div id="background-text-layer">
+    <div id="background-text-content"></div>
+  </div>
+
+  <!-- Palco 3D -->
+  <div id="canvas-container"></div>
+
+  <!-- Balões de Fala 3D -->
+  <div id="bubbles-layer"></div>
+
+  <!-- Cabeçalho -->
+  <header>
     <div class="brand">
-        <h1>O ESTRATEGISTA</h1>
-        <span>Livro Animado & Avaliador de Histórias</span>
-    </div>
-    <button class="close-all-btn" onclick="closeEverything()">✕ FECHAR TUDO</button>
-</div>
-
-<!-- ABAS PRINCIPAIS -->
-<div class="main-tabs">
-    <button id="tabAddTextBtn" class="tab-btn add-text-tab active" onclick="openAddTextTab()">
-        ✍️ ADICIONAR TEXTO (ABA PRINCIPAL)
-    </button>
-    <button id="tabStageBtn" class="tab-btn" onclick="openStageTab()">
-        📖 VER ANIMAÇÃO & LIVRO
-    </button>
-</div>
-
-<div class="container">
-
-    <!-- ABA ADICIONAR TEXTO COM CAIXA GRANDE E ZOOM PRÓPRIO -->
-    <section id="addTextPanel" class="add-text-panel open">
-        <div class="panel-top-row">
-            <h2>✍️ ADICIONAR TEXTO</h2>
-
-            <div class="zoom-toolbar">
-                <span>🔍 Zoom:</span>
-                <button type="button" onclick="changeTextZoom(-10)">−</button>
-                <span id="zoomValue">100%</span>
-                <button type="button" onclick="changeTextZoom(10)">+</button>
-                <button type="button" onclick="resetTextZoom()">100%</button>
-            </div>
-        </div>
-
-        <textarea id="hugeStoryInput" class="big-text-box" placeholder="Escreve ou cola aqui o teu texto bem grande...&#10;&#10;Exemplo:&#10;Lorian: Temos 300 homens prontos na montanha.&#10;Mira: Dentro da casa encontramos o mapa secreto.&#10;Ronan: Na floresta restam 50 homens.&#10;Seran: A noite caiu sobre a ponte."></textarea>
-
-        <div class="text-actions">
-            <button type="button" class="ctrl-btn primary-btn" onclick="applyAndShowStory()">
-                ✓ APLICAR TEXTO E ABRIR ANIMAÇÃO
-            </button>
-            <button type="button" class="ctrl-btn" onclick="fillSampleText()">
-                ⚡ EXEMPLO RÁPIDO
-            </button>
-            <button type="button" class="ctrl-btn danger-btn" onclick="clearTextArea()">
-                🗑 LIMPAR TEXTO
-            </button>
-        </div>
-    </section>
-
-    <!-- ANIMAÇÃO E LIVRO -->
-    <div id="stageAndBookWrapper" class="stage-and-book-wrapper">
-
-        <div class="status-bar">
-            <div class="badge">
-                <span>Trecho:</span>
-                <strong id="sceneNumber">1</strong> — <strong id="sceneName">Campo de batalha</strong>
-            </div>
-
-            <div class="badge">
-                <span>Pessoas na cena:</span>
-                <span id="peopleCount">0</span>
-            </div>
-        </div>
-
-        <div class="main-stage" style="margin-top: 16px;">
-            <div class="canvas-wrapper">
-                <canvas id="screen" width="960" height="540"></canvas>
-
-                <div class="controls-panel">
-                    <div class="controls-row">
-                        <button type="button" class="ctrl-btn primary-btn" onclick="startStory()">▶ INICIAR</button>
-                        <button type="button" class="ctrl-btn pause-center" onclick="pauseStory()">Ⅱ PAUSAR</button>
-                        <button type="button" class="ctrl-btn" onclick="resumeStory()">▶ CONTINUAR</button>
-                    </div>
-
-                    <div class="controls-row">
-                        <button type="button" class="ctrl-btn" onclick="prevSegment()">⏮ ANTERIOR</button>
-                        <button type="button" class="ctrl-btn" onclick="skipNext()">⏭ PRÓXIMO</button>
-                        <button type="button" class="ctrl-btn danger-btn" onclick="restartStory()">↻ REINICIAR</button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="book-container">
-                <div>
-                    <div class="book-header">
-                        <span class="book-chapter" id="bookChapterTitle">Trecho 1</span>
-                        <span class="page-number" id="pageIndicator">Página 1 / 1</span>
-                    </div>
-
-                    <div id="currentSpeaker">📜 NARRADOR</div>
-
-                    <div id="currentText">
-                        Abre a aba <strong>ADICIONAR TEXTO</strong> para colar o teu texto grande ou carrega em <strong>INICIAR</strong>.
-                    </div>
-                </div>
-
-                <div>
-                    <div class="progress-label">
-                        <span>Progresso</span>
-                        <span id="progressPercent">0%</span>
-                    </div>
-                    <div class="progress-area">
-                        <div id="progress"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
+      <span class="brand-title">📖 Livro Vivo 3D</span>
+      <span class="page-badge" id="page-indicator">Página 1 de 2</span>
+      <span class="scene-tag" id="scene-indicator">Cenário: Castelo &amp; Floresta</span>
     </div>
 
-    <!-- SECÇÃO DE CONFIGURAÇÕES AO BAIXAR A TELA -->
-    <section id="settingsSection" class="settings-section">
-        <h3>⚙️ CONFIGURAÇÕES</h3>
-        <div class="settings-grid">
-            <div class="setting-card">
-                <label for="speedRange">⚡ Velocidade da leitura: <strong id="speedLabel" style="color: var(--gold);">1.1x</strong></label>
-                <input type="range" id="speedRange" min="0.8" max="2.0" step="0.1" value="1.1" oninput="updateSpeed(this.value)">
-            </div>
+    <div class="menu-wrapper">
+      <button id="dots-btn" title="Opções">⋮</button>
+      <div id="dropdown-menu">
+        <button class="menu-item" id="btn-open-editor">➕ Adicionar / Editar Texto</button>
+        <button class="menu-item" id="btn-add-page">📄 Adicionar Nova Página</button>
+        <button class="menu-item" id="btn-toggle-stage">👁️ Limpar Imagens (Ver Só Texto)</button>
+        <button class="menu-item" id="btn-cycle-bg">🏞️ Trocar Paisagem Manualmente</button>
+      </div>
+    </div>
+  </header>
 
-            <div class="setting-card">
-                <label for="sceneSelect">🎬 Saltar para trecho:</label>
-                <select id="sceneSelect" onchange="jumpToScene(this.value)"></select>
-            </div>
+  <!-- HUD Inferior -->
+  <div id="hud-bottom">
+    <div id="narration-box">
+      <div class="narrator-avatar" id="speaker-icon">🧙‍♂️</div>
+      <div>
+        <div id="speaker-label">Narrador</div>
+        <div id="subtitle-text">Pressione Iniciar para começar a história interativa...</div>
+      </div>
+    </div>
 
-            <div class="setting-card">
-                <label style="cursor: pointer; display: flex; align-items: center; gap: 8px; font-weight: 600;">
-                    <input type="checkbox" id="voiceToggle" checked style="width: auto; margin: 0;">
-                    🔊 Narração por Voz Ativa
-                </label>
-            </div>
-        </div>
-    </section>
+    <div class="controls-row">
+      <button class="ctrl-btn" id="btn-prev">⏮ Voltar</button>
+      <button class="ctrl-btn primary" id="btn-play-pause">▶ Iniciar</button>
+      <button class="ctrl-btn" id="btn-next">Avançar ⏭</button>
+    </div>
 
-</div>
+    <div class="progress-row">
+      <span id="time-remaining">Faltam 00:00</span>
+      <input type="range" id="progress-slider" min="0" max="100" value="0" step="1" />
+      <span id="percent-label">0%</span>
+    </div>
+  </div>
 
-<script>
-/* =====================================================
-   ABAS, ZOOM DO TEXTO E FECHAR TUDO
-===================================================== */
+  <!-- Modal de Texto e Páginas -->
+  <div id="editor-modal">
+    <div class="modal-card">
+      <h2>Editar História e Páginas</h2>
+      <div class="pages-bar" id="modal-pages-bar"></div>
+      <input type="text" id="page-title-input" placeholder="Descrição ou título desta página..." />
+      <textarea id="page-text-input" placeholder="Escreva aqui. Use Nome: fala para diálogos (ex: Maria: Olá!). Símbolos como @ ou * serão limpos automaticamente."></textarea>
+      <div class="modal-actions">
+        <button class="ctrl-btn" id="btn-close-modal">Cancelar</button>
+        <button class="ctrl-btn primary" id="btn-save-story">Salvar e Encenar</button>
+      </div>
+    </div>
+  </div>
 
-let currentZoom = 100;
+  <!-- Three.js CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script>
+    // =========================================================
+    // 1. DADOS INICIAIS DO LIVRO (MÚLTIPLAS PÁGINAS)
+    // =========================================================
+    let pages = [
+      {
+        title: "Capítulo 1: O Encontro no Reino",
+        text: `O vento soprava suave entre as árvores antigas do castelo enquanto o sol iluminava o vale.
+Maria: Precisamos atravessar a floresta antes que o exército inimigo chegue às montanhas!
+João: Não tenha medo, Maria. Nossos soldados já estão posicionados perto do rio.
+Antônia: Eu conheço um atalho secreto pela água que nos levará direto ao topo da montanha!
+Durante a caminhada pela floresta, o silêncio voltou a reinar sobre as copas das árvores e o riacho cristalino.`
+      },
+      {
+        title: "Capítulo 2: A Marcha nas Montanhas",
+        text: `As montanhas altas cobriam o horizonte com névoa densa e frio intenso.
+João: Vejam lá embaixo! O exército se aproxima pelo vale.
+Maria: Mantenham a calma. Vamos seguir juntos até o amanhecer.
+A guerra estava prestes a começar, mas a coragem daqueles viajantes ecoava por toda a montanha.`
+      }
+    ];
 
-function changeTextZoom(delta) {
-    currentZoom = Math.max(70, Math.min(180, currentZoom + delta));
-    applyZoomStyle();
-}
+    let currentPageIndex = 0;
+    let segments = [];
+    let currentSegIndex = 0;
+    let isPlaying = false;
+    let stageVisible = true;
+    let availableVoices = [];
 
-function resetTextZoom() {
-    currentZoom = 100;
-    applyZoomStyle();
-}
-
-function applyZoomStyle() {
-    const box = document.getElementById("hugeStoryInput");
-    box.style.fontSize = (18 * (currentZoom / 100)) + "px";
-    document.getElementById("zoomValue").textContent = currentZoom + "%";
-}
-
-function openAddTextTab() {
-    document.getElementById("stageAndBookWrapper").classList.remove("hidden-all");
-    document.getElementById("addTextPanel").classList.add("open");
-    document.getElementById("tabAddTextBtn").classList.add("active");
-    document.getElementById("tabStageBtn").classList.remove("active");
-}
-
-function openStageTab() {
-    document.getElementById("stageAndBookWrapper").classList.remove("hidden-all");
-    document.getElementById("addTextPanel").classList.remove("open");
-    document.getElementById("tabStageBtn").classList.add("active");
-    document.getElementById("tabAddTextBtn").classList.remove("active");
-}
-
-function closeEverything() {
-    running = false;
-    paused = false;
-    clearTimeout(speechTimer);
-    if ("speechSynthesis" in window) window.speechSynthesis.cancel();
-
-    document.getElementById("stageAndBookWrapper").classList.add("hidden-all");
-    document.getElementById("addTextPanel").classList.remove("open");
-    document.getElementById("tabAddTextBtn").classList.remove("active");
-    document.getElementById("tabStageBtn").classList.remove("active");
-}
-
-/* =====================================================
-   CANVAS, AVATARES ÚNICOS E CENÁRIOS
-===================================================== */
-
-const canvas = document.getElementById("screen");
-const ctx = canvas.getContext("2d");
-
-const W = canvas.width;
-const H = canvas.height;
-
-let running = false;
-let paused = false;
-let currentIndex = 0;
-let speechToken = 0;
-let speechRate = 1.1;
-
-let currentSegment = null;
-let speechTimer = null;
-let availableVoices = [];
-
-function loadVoices() {
-    if ("speechSynthesis" in window) {
-        availableVoices = window.speechSynthesis.getVoices();
-    }
-}
-loadVoices();
-if ("speechSynthesis" in window && window.speechSynthesis.onvoiceschanged !== undefined) {
-    window.speechSynthesis.onvoiceschanged = loadVoices;
-}
-
-const avatarPresets = [
-    { color: "#e2e8f0", cape: "#991b1b", hair: "#1e1b18", style: "spiky", skin: "#eab693" },
-    { color: "#f472b6", cape: "#831843", hair: "#5c2d16", style: "long", skin: "#f1c2a2" },
-    { color: "#60a5fa", cape: "#1e3a8a", hair: "#3b2f2f", style: "hood", skin: "#d9a077" },
-    { color: "#fbbf24", cape: "#78350f", hair: "#92400e", style: "beard", skin: "#e0ac84" },
-    { color: "#34d399", cape: "#065f46", hair: "#111827", style: "band", skin: "#c6865c" },
-    { color: "#c084fc", cape: "#4c1d95", hair: "#fde047", style: "crown", skin: "#f3c8a8" },
-    { color: "#fb923c", cape: "#7c2d12", hair: "#27272a", style: "mohawk", skin: "#d4986e" },
-    { color: "#38bdf8", cape: "#0c4a6e", hair: "#475569", style: "beard", skin: "#e5b590" }
-];
-
-const characters = {};
-
-function createUniqueAvatar(name) {
-    if (!name || name === "Narrador") return;
-    if (!characters[name]) {
-        const idx = Object.keys(characters).length;
-        const preset = avatarPresets[idx % avatarPresets.length];
-        characters[name] = {
-            x: 480,
-            y: 395,
-            color: preset.color,
-            cape: preset.cape,
-            hair: preset.hair,
-            style: preset.style,
-            skin: preset.skin,
-            visible: false,
-            action: "idle",
-            targetX: 480,
-            phase: idx * 1.3
-        };
-    }
-}
-
-["Lorian", "Mira", "Ronan", "Seran", "Aldric", "Edric"].forEach(createUniqueAvatar);
-
-let soldiers = [];
-let stars = [];
-let sceneBackground = "battle";
-let sceneTitle = "Campo de batalha";
-let sceneNumber = 1;
-
-let clock = 0;
-let speakingCharacter = null;
-let speechBubble = "";
-
-for (let i = 0; i < 45; i++) {
-    stars.push({
-        x: Math.random() * W,
-        y: Math.random() * 250,
-        r: Math.random() * 1.8 + 0.5,
-        twinkle: Math.random() * 5
-    });
-}
-
-function createSoldiers(amount) {
-    soldiers = [];
-    const visualCount = Math.min(80, Math.max(0, amount));
-    const cols = 16;
-    for (let i = 0; i < visualCount; i++) {
-        const col = i % cols;
-        const row = Math.floor(i / cols);
-        soldiers.push({
-            x: 45 + col * 58 + (row % 2) * 14,
-            y: 432 + row * 18,
-            phase: Math.random() * 10,
-            color: "#64748b"
-        });
-    }
-}
-
-function setScene(scene, title, people, soldierCount) {
-    sceneBackground = scene;
-    sceneTitle = title;
-    sceneNumber = currentSegment ? currentSegment.sceneNumber : 1;
-
-    Object.keys(characters).forEach(name => {
-        characters[name].visible = false;
-        characters[name].action = "idle";
-    });
-
-    const activeSpeakers = (people || []).filter(n => n && n !== "Narrador");
-    const spacing = W / (activeSpeakers.length + 1);
-
-    activeSpeakers.forEach((name, idx) => {
-        createUniqueAvatar(name);
-        const charObj = characters[name];
-        const posX = Math.round(spacing * (idx + 1));
-        charObj.visible = true;
-        charObj.x = posX;
-        charObj.targetX = posX;
-    });
-
-    createSoldiers(soldierCount || 0);
-
-    document.getElementById("sceneNumber").textContent = sceneNumber;
-    document.getElementById("sceneName").textContent = title;
-    document.getElementById("bookChapterTitle").textContent = `Trecho ${sceneNumber} — ${title}`;
-    document.getElementById("sceneSelect").value = getFirstIndexOfScene(sceneNumber);
-
-    updatePeopleCount(soldierCount || 0);
-}
-
-function getFirstIndexOfScene(num) {
-    const idx = story.findIndex(s => s.sceneNumber === num);
-    return idx >= 0 ? idx : 0;
-}
-
-function updatePeopleCount(realSoldiersCount) {
-    const visibleProtagonists = Object.values(characters).filter(c => c.visible).length;
-    document.getElementById("peopleCount").textContent = visibleProtagonists + (realSoldiersCount || 0);
-}
-
-function rebuildSceneDropdown() {
-    const select = document.getElementById("sceneSelect");
-    select.innerHTML = "";
-    const seen = new Set();
-
-    story.forEach((seg, idx) => {
-        if (!seen.has(seg.sceneNumber)) {
-            seen.add(seg.sceneNumber);
-            const opt = document.createElement("option");
-            opt.value = idx;
-            opt.textContent = `${seg.sceneNumber}. ${seg.title}`;
-            select.appendChild(opt);
-        }
-    });
-}
-
-function drawBackground() {
-    let skyTop = "#1e293b", skyBottom = "#334155";
-    let groundTop = "#292f36", groundBottom = "#181c20";
-
-    if (sceneBackground === "house") {
-        skyTop = "#3b2314"; skyBottom = "#6b3e26";
-        groundTop = "#4a2c18"; groundBottom = "#26150b";
-    } else if (sceneBackground === "forest") {
-        skyTop = "#0d2818"; skyBottom = "#1b4332";
-        groundTop = "#1e3a24"; groundBottom = "#0c1a10";
-    } else if (sceneBackground === "mountain") {
-        skyTop = "#1e3a5f"; skyBottom = "#7dd3fc";
-        groundTop = "#3f4e4f"; groundBottom = "#1c2425";
-    } else if (sceneBackground === "castle") {
-        skyTop = "#172554"; skyBottom = "#3b82f6";
-        groundTop = "#3f3f46"; groundBottom = "#18181b";
-    } else if (sceneBackground === "night") {
-        skyTop = "#020617"; skyBottom = "#0f172a";
-        groundTop = "#14221d"; groundBottom = "#09100e";
-    } else if (sceneBackground === "tower") {
-        skyTop = "#090d16"; skyBottom = "#1e1b4b";
-        groundTop = "#27272a"; groundBottom = "#09090b";
-    } else if (sceneBackground === "bridge") {
-        skyTop = "#1e3a5f"; skyBottom = "#475569";
-        groundTop = "#29323c"; groundBottom = "#14191f";
-    } else if (sceneBackground === "map") {
-        skyTop = "#271c19"; skyBottom = "#452c1e";
-        groundTop = "#3a2618"; groundBottom = "#1f140c";
+    // =========================================================
+    // 2. LIMPEZA DE TEXTO E PARSER DE PERSONAGENS
+    // =========================================================
+    function cleanSpokenText(raw) {
+      // Remove @, *, #, _, ~, colchetes e caracteres desnecessários mantendo pontuação básica
+      return raw
+        .replace(/[@*#_~`^<>[\]{}|\\]/g, '')
+        .replace(/\s+/g, ' ')
+        .trim();
     }
 
-    const skyGrad = ctx.createLinearGradient(0, 0, 0, 410);
-    skyGrad.addColorStop(0, skyTop);
-    skyGrad.addColorStop(1, skyBottom);
-    ctx.fillStyle = skyGrad;
-    ctx.fillRect(0, 0, W, H);
-
-    if (sceneBackground === "night" || sceneBackground === "tower") {
-        stars.forEach(st => {
-            const alpha = 0.4 + Math.sin(clock * 2 + st.twinkle) * 0.4;
-            ctx.fillStyle = `rgba(255, 255, 255, ${alpha})`;
-            ctx.beginPath();
-            ctx.arc(st.x, st.y, st.r, 0, Math.PI * 2);
-            ctx.fill();
-        });
-
-        ctx.fillStyle = "#fef08a";
-        ctx.beginPath();
-        ctx.arc(800, 95, 32, 0, Math.PI * 2);
-        ctx.fill();
+    function guessGender(name) {
+      const n = name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+      const femaleExceptions = ['alice', 'beatriz', 'raquel', 'rute', 'ester', 'iris', 'ines', 'carmen', 'luz', 'flor'];
+      const maleExceptions = ['luca', 'noa', 'joshua', 'nikita'];
+      if (maleExceptions.includes(n)) return 'M';
+      if (femaleExceptions.includes(n)) return 'F';
+      return n.endsWith('a') ? 'F' : 'M';
     }
 
-    if (sceneBackground === "mountain" || sceneBackground === "battle") {
-        ctx.fillStyle = sceneBackground === "mountain" ? "#475569" : "rgba(15, 23, 42, 0.55)";
-        ctx.beginPath();
-        ctx.moveTo(0, 340);
-        ctx.lineTo(170, 145);
-        ctx.lineTo(340, 330);
-        ctx.lineTo(540, 130);
-        ctx.lineTo(740, 330);
-        ctx.lineTo(890, 160);
-        ctx.lineTo(960, 290);
-        ctx.lineTo(960, 410);
-        ctx.lineTo(0, 410);
-        ctx.fill();
+    function hashColor(name) {
+      const palette = ['#e11d48', '#2563eb', '#9333ea', '#059669', '#d97706', '#0891b2'];
+      let hash = 0;
+      for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
+      return palette[Math.abs(hash) % palette.length];
     }
 
-    if (sceneBackground === "forest") {
-        for (let tx = 50; tx < W; tx += 110) {
-            ctx.fillStyle = "#3e2723";
-            ctx.fillRect(tx - 10, 240, 20, 170);
-
-            ctx.fillStyle = "#2d6a4f";
-            ctx.beginPath();
-            ctx.arc(tx, 225, 48, 0, Math.PI * 2);
-            ctx.arc(tx - 24, 250, 36, 0, Math.PI * 2);
-            ctx.arc(tx + 24, 250, 36, 0, Math.PI * 2);
-            ctx.fill();
-        }
+    function detectTheme(text) {
+      const t = text.toLowerCase();
+      if (/guerra|batalha|espada|ataque/.test(t)) return 'guerra';
+      if (/montanha|serra|pico|rocha/.test(t)) return 'montanha';
+      if (/água|agua|rio|mar|lago|riacho/.test(t)) return 'agua';
+      if (/floresta|árvore|arvore|bosque|mata/.test(t)) return 'floresta';
+      return 'castelo';
     }
 
-    if (sceneBackground === "house") {
-        ctx.fillStyle = "#5c3a21";
-        ctx.fillRect(90, 120, 780, 290);
-
-        ctx.fillStyle = "#fbbf24";
-        ctx.fillRect(170, 175, 110, 95);
-        ctx.strokeStyle = "#3b2314";
-        ctx.lineWidth = 6;
-        ctx.strokeRect(170, 175, 110, 95);
-
-        ctx.fillStyle = "#292524";
-        ctx.fillRect(680, 230, 120, 180);
-        ctx.fillStyle = "#f97316";
-        ctx.beginPath();
-        ctx.arc(740, 370, 28 + Math.sin(clock * 12) * 3, Math.PI, 0);
-        ctx.fill();
+    function hasArmyKeyword(text) {
+      return /exército|exercito|soldado|soldados|tropa|tropas|guerra/.test(text.toLowerCase());
     }
 
-    if (sceneBackground === "castle") {
-        ctx.fillStyle = "#475569";
-        ctx.fillRect(650, 190, 180, 215);
-        ctx.fillRect(630, 160, 45, 245);
-        ctx.fillRect(805, 160, 45, 245);
-    }
-
-    if (sceneBackground === "tower") {
-        ctx.fillStyle = "#334155";
-        ctx.fillRect(380, 80, 190, 325);
-        ctx.fillStyle = "#f59e0b";
-        ctx.fillRect(455, 135, 40, 65);
-    }
-
-    if (sceneBackground === "bridge") {
-        ctx.fillStyle = "#78350f";
-        ctx.fillRect(0, 355, 960, 50);
-    }
-
-    if (sceneBackground === "map") {
-        ctx.fillStyle = "#d6b88d";
-        ctx.fillRect(310, 295, 340, 110);
-        ctx.strokeStyle = "#78350f";
-        ctx.lineWidth = 4;
-        ctx.strokeRect(310, 295, 340, 110);
-    }
-
-    const groundGrad = ctx.createLinearGradient(0, 405, 0, H);
-    groundGrad.addColorStop(0, groundTop);
-    groundGrad.addColorStop(1, groundBottom);
-    ctx.fillStyle = groundGrad;
-    ctx.fillRect(0, 405, W, 135);
-}
-
-function drawCharacter(name, c) {
-    if (!c.visible) return;
-
-    const x = c.x;
-    const y = c.y;
-    const bounce = Math.sin(clock * 2 + c.phase) * 2;
-    const headY = y - 105 + bounce;
-
-    if (speakingCharacter === name) {
-        ctx.fillStyle = "rgba(212, 175, 55, 0.24)";
-        ctx.beginPath();
-        ctx.ellipse(x, y + 2, 46, 12, 0, 0, Math.PI * 2);
-        ctx.fill();
-    }
-
-    ctx.fillStyle = "rgba(0,0,0,0.35)";
-    ctx.beginPath();
-    ctx.ellipse(x, y + 2, 28, 7, 0, 0, Math.PI * 2);
-    ctx.fill();
-
-    ctx.fillStyle = c.cape;
-    ctx.beginPath();
-    ctx.moveTo(x - 14, y - 88 + bounce);
-    ctx.lineTo(x - 24 - Math.sin(clock * 4 + c.phase) * 4, y - 10);
-    ctx.lineTo(x + 24 + Math.sin(clock * 4 + c.phase) * 4, y - 10);
-    ctx.lineTo(x + 14, y - 88 + bounce);
-    ctx.fill();
-
-    ctx.strokeStyle = "#1e293b";
-    ctx.lineWidth = 9;
-    ctx.lineCap = "round";
-
-    ctx.beginPath();
-    ctx.moveTo(x - 7, y - 45);
-    ctx.lineTo(x - 10, y);
-    ctx.moveTo(x + 7, y - 45);
-    ctx.lineTo(x + 10, y);
-    ctx.stroke();
-
-    ctx.fillStyle = c.color;
-    ctx.beginPath();
-    ctx.roundRect(x - 16, y - 90 + bounce, 32, 48, 6);
-    ctx.fill();
-
-    let armAngle = Math.sin(clock * 3 + c.phase) * 0.08;
-    if (c.action === "raise") armAngle = -1.2;
-    if (c.action === "attack") armAngle = -1.4;
-
-    ctx.strokeStyle = c.color;
-    ctx.lineWidth = 8;
-
-    ctx.beginPath();
-    ctx.moveTo(x - 14, y - 80 + bounce);
-    ctx.lineTo(x - 29, y - 56 + armAngle * 12);
-    ctx.moveTo(x + 14, y - 80 + bounce);
-    ctx.lineTo(x + 29, y - 56 - armAngle * 12);
-    ctx.stroke();
-
-    ctx.fillStyle = c.skin;
-    ctx.beginPath();
-    ctx.arc(x, headY, 19, 0, Math.PI * 2);
-    ctx.fill();
-
-    ctx.fillStyle = c.hair;
-    if (c.style === "long") {
-        ctx.beginPath();
-        ctx.arc(x, headY - 3, 20, Math.PI * 0.85, Math.PI * 2.15);
-        ctx.fill();
-        ctx.fillRect(x - 19, headY, 8, 26);
-        ctx.fillRect(x + 11, headY, 8, 26);
-    } else if (c.style === "crown") {
-        ctx.fillStyle = "#facc15";
-        ctx.beginPath();
-        ctx.moveTo(x - 16, headY - 14);
-        ctx.lineTo(x - 10, headY - 27);
-        ctx.lineTo(x, headY - 18);
-        ctx.lineTo(x + 10, headY - 27);
-        ctx.lineTo(x + 16, headY - 14);
-        ctx.fill();
-    } else if (c.style === "hood") {
-        ctx.strokeStyle = c.color;
-        ctx.lineWidth = 5;
-        ctx.beginPath();
-        ctx.arc(x, headY, 21, Math.PI, Math.PI * 2);
-        ctx.stroke();
-    } else if (c.style === "mohawk") {
-        ctx.fillRect(x - 4, headY - 28, 8, 14);
-    } else {
-        ctx.beginPath();
-        ctx.arc(x, headY - 5, 19, Math.PI, Math.PI * 2);
-        ctx.fill();
-    }
-
-    if (c.style === "beard") {
-        ctx.fillStyle = c.hair;
-        ctx.beginPath();
-        ctx.arc(x, headY + 6, 14, 0, Math.PI);
-        ctx.fill();
-    }
-
-    ctx.fillStyle = "#111827";
-    ctx.fillRect(x - 7, headY - 2, 3, 3);
-    ctx.fillRect(x + 5, headY - 2, 3, 3);
-
-    const labelWidth = Math.max(74, name.length * 9 + 20);
-    ctx.fillStyle = speakingCharacter === name ? "#8b261d" : "rgba(15, 23, 42, 0.92)";
-    ctx.beginPath();
-    ctx.roundRect(x - labelWidth / 2, headY - 54, labelWidth, 25, 7);
-    ctx.fill();
-
-    ctx.strokeStyle = speakingCharacter === name ? "#facc15" : c.color;
-    ctx.lineWidth = 1.6;
-    ctx.stroke();
-
-    ctx.fillStyle = "#ffffff";
-    ctx.font = "bold 13px Inter, sans-serif";
-    ctx.textAlign = "center";
-    ctx.fillText(name, x, headY - 37);
-}
-
-function drawSoldiers() {
-    soldiers.forEach(s => {
-        const bounce = Math.sin(clock * 3 + s.phase) * 2;
-        ctx.fillStyle = s.color;
-        ctx.fillRect(s.x - 6, s.y - 22 + bounce, 12, 20);
-
-        ctx.fillStyle = "#cbd5e1";
-        ctx.beginPath();
-        ctx.arc(s.x, s.y - 28 + bounce, 6.5, 0, Math.PI * 2);
-        ctx.fill();
-    });
-}
-
-function drawSpeechBubble() {
-    if (!speechBubble || !speakingCharacter) return;
-
-    const c = characters[speakingCharacter];
-    if (!c || !c.visible) return;
-
-    const x = Math.max(195, Math.min(W - 195, c.x));
-    const y = c.y - 182;
-
-    const text = speechBubble.length > 56
-        ? speechBubble.substring(0, 53) + "..."
-        : speechBubble;
-
-    ctx.font = "600 14px Lora, serif";
-    const width = Math.min(360, ctx.measureText(text).width + 32);
-
-    ctx.fillStyle = "#f4ebd8";
-    ctx.beginPath();
-    ctx.roundRect(x - width / 2, y - 28, width, 38, 10);
-    ctx.fill();
-
-    ctx.strokeStyle = "#8b261d";
-    ctx.lineWidth = 2;
-    ctx.stroke();
-
-    ctx.fillStyle = "#f4ebd8";
-    ctx.beginPath();
-    ctx.moveTo(c.x - 6, y + 10);
-    ctx.lineTo(c.x + 6, y + 10);
-    ctx.lineTo(c.x, y + 18);
-    ctx.fill();
-
-    ctx.fillStyle = "#1f1914";
-    ctx.textAlign = "center";
-    ctx.fillText(text, x, y - 4);
-}
-
-function render() {
-    if (!paused) {
-        clock += 0.016;
-    }
-
-    ctx.clearRect(0, 0, W, H);
-    drawBackground();
-    drawSoldiers();
-
-    Object.keys(characters).forEach(name => {
-        drawCharacter(name, characters[name]);
-    });
-
-    drawSpeechBubble();
-    requestAnimationFrame(render);
-}
-
-render();
-
-/* =====================================================
-   AVALIADOR DE TEXTO
-===================================================== */
-
-const rotatingScenes = [
-    { bg: "battle", title: "Campo de batalha" },
-    { bg: "house", title: "Dentro da casa" },
-    { bg: "forest", title: "Na floresta" },
-    { bg: "mountain", title: "Na montanha" },
-    { bg: "castle", title: "No castelo" },
-    { bg: "night", title: "Sob a noite" },
-    { bg: "tower", title: "Na torre" },
-    { bg: "bridge", title: "Na ponte" },
-    { bg: "map", title: "Mesa de estratégia" }
-];
-
-let story = [
-    {
-        sceneNumber: 1,
-        scene: "battle",
-        title: "Campo de batalha",
-        people: ["Lorian"],
-        soldiers: 50,
-        speaker: "Lorian",
-        text: "A batalha começou com 50 homens atentos ao horizonte.",
-        action: { actor: "Lorian", type: "raise" }
-    }
-];
-
-function detectSoldierCount(text, fallback) {
-    const t = text.toLowerCase();
-    const numMatch = t.match(/\b(\d{1,5})\s+(?:homens|soldados|guerreiros|arqueiros|cavaleiros)\b/);
-    if (numMatch) return parseInt(numMatch[1], 10);
-    if (t.includes("muitos homens") || t.includes("multidão")) return 80;
-    if (t.includes("poucos homens") || t.includes("alguns homens")) return 8;
-    return fallback;
-}
-
-function detectSceneForSegment(text, index) {
-    const t = text.toLowerCase();
-    if (t.includes("casa") || t.includes("quarto") || t.includes("sala")) return { bg: "house", title: "Dentro da casa" };
-    if (t.includes("floresta") || t.includes("bosque") || t.includes("árvore")) return { bg: "forest", title: "Na floresta" };
-    if (t.includes("montanha") || t.includes("serra") || t.includes("pico")) return { bg: "mountain", title: "Na montanha" };
-    if (t.includes("ponte")) return { bg: "bridge", title: "Na ponte" };
-    if (t.includes("torre")) return { bg: "tower", title: "Na torre" };
-    if (t.includes("castelo") || t.includes("rei")) return { bg: "castle", title: "No castelo" };
-    if (t.includes("noite") || t.includes("lua")) return { bg: "night", title: "Sob a noite" };
-    if (t.includes("mapa") || t.includes("plano")) return { bg: "map", title: "Mesa de estratégia" };
-    return rotatingScenes[index % rotatingScenes.length];
-}
-
-function parseLineToSegment(rawLine, index, lastSoldierCount) {
-    const line = rawLine.trim();
-    if (!line) return null;
-
-    let speaker = "Narrador";
-    let speechText = line;
-
-    const match = line.match(/^([A-Za-zÀ-ÿ]{2,20})\s*(?::|—|-)\s*(.+)$/);
-    if (match) {
-        const candidate = match[1].trim();
-        const formattedName = candidate.charAt(0).toUpperCase() + candidate.slice(1);
-        if (formattedName.toLowerCase() !== "narrador") {
-            speaker = formattedName;
-            createUniqueAvatar(speaker);
-        }
-        speechText = match[2].trim();
-    }
-
-    const sceneInfo = detectSceneForSegment(speechText, index);
-    const soldiersInSegment = detectSoldierCount(speechText, lastSoldierCount);
-    const activePeople = speaker !== "Narrador" ? [speaker] : [];
-    const actions = ["walk", "raise", "attack"];
-
-    return {
-        sceneNumber: index + 1,
-        scene: sceneInfo.bg,
-        title: sceneInfo.title,
-        people: activePeople,
-        soldiers: soldiersInSegment,
-        speaker: speaker,
-        text: speechText,
-        action: speaker !== "Narrador" ? { actor: speaker, type: actions[index % actions.length] } : null,
-        _soldierTracker: soldiersInSegment
-    };
-}
-
-function applyAndShowStory() {
-    const rawText = document.getElementById("hugeStoryInput").value.trim();
-    if (!rawText) {
-        alert("Escreve ou cola um texto primeiro!");
-        return;
-    }
-
-    let chunks = rawText.split(/\r?\n+/).map(l => l.trim()).filter(Boolean);
-    if (chunks.length === 1 && rawText.length > 220) {
-        chunks = rawText.match(/[^.!?]+[.!?]+(?:\s|$)/g) || [rawText];
-    }
-
-    const parsedSegments = [];
-    let currentSoldierTotal = 0;
-
-    chunks.forEach((chunk, idx) => {
-        const seg = parseLineToSegment(chunk, idx, currentSoldierTotal);
-        if (seg) {
-            currentSoldierTotal = seg._soldierTracker;
-            parsedSegments.push(seg);
-        }
-    });
-
-    if (parsedSegments.length === 0) return;
-
-    story = parsedSegments;
-    rebuildSceneDropdown();
-
-    clearTimeout(speechTimer);
-    if ("speechSynthesis" in window) window.speechSynthesis.cancel();
-
-    currentIndex = 0;
-    currentSegment = story[0];
-    running = true;
-    paused = false;
-    speechToken++;
-
-    openStageTab();
-    speakSegment(story[0], speechToken);
-}
-
-function fillSampleText() {
-    document.getElementById("hugeStoryInput").value =
-`Lorian: Reunimos 300 homens para a marcha.
-Mira: Dentro da casa encontramos o diário antigo.
-Ronan: Na floresta restam 50 homens em posição.
-Seran: No alto da montanha o plano ganha forma.
-Edric: Muitos homens chegaram ao castelo ao amanhecer.`;
-}
-
-function clearTextArea() {
-    document.getElementById("hugeStoryInput").value = "";
-}
-
-/* =====================================================
-   CONTROLO DA LEITURA E VOZ
-===================================================== */
-
-function updateSpeed(val) {
-    speechRate = parseFloat(val);
-    document.getElementById("speedLabel").textContent = speechRate.toFixed(1) + "x";
-}
-
-function updateStoryText(segment) {
-    const icon = segment.speaker === "Narrador" ? "📜" : "🗣️";
-    document.getElementById("currentSpeaker").textContent = `${icon} ${segment.speaker.toUpperCase()}`;
-    document.getElementById("currentText").textContent = segment.text;
-    document.getElementById("pageIndicator").textContent = `Página ${currentIndex + 1} / ${story.length}`;
-
-    const pct = Math.round(((currentIndex + 1) / story.length) * 100);
-    document.getElementById("progress").style.width = pct + "%";
-    document.getElementById("progressPercent").textContent = pct + "%";
-}
-
-function configureVoice(utterance, speaker) {
-    utterance.lang = "pt-PT";
-    utterance.rate = speechRate;
-
-    const ptVoices = availableVoices.filter(v => v.lang.includes("pt"));
-    if (ptVoices.length > 0) {
-        if (speaker === "Mira") {
-            const fem = ptVoices.find(v => /maria|joana|francisca|female|luciana/i.test(v.name));
-            if (fem) utterance.voice = fem;
+    function parsePageSegments(pageText) {
+      const lines = pageText.split(/\n+/).map(l => l.trim()).filter(Boolean);
+      const characterMap = {};
+      let femaleCount = 0, maleCount = 0;
+
+      const parsed = lines.map((line, idx) => {
+        const match = line.match(/^([A-ZÀ-Ú][a-zà-úA-ZÀ-Ú0-9\s]{1,22}):\s*(.+)$/);
+        if (match) {
+          const speaker = cleanSpokenText(match[1]);
+          const spoken = cleanSpokenText(match[2]);
+          if (!characterMap[speaker]) {
+            const gender = guessGender(speaker);
+            const pitchOffset = gender === 'F' ? (1.15 + (femaleCount++ % 4) * 0.14) : (0.88 - (maleCount++ % 4) * 0.1);
+            characterMap[speaker] = {
+              name: speaker,
+              gender,
+              color: hashColor(speaker),
+              pitch: Math.max(0.6, Math.min(1.65, pitchOffset)),
+              rate: 0.98 + ((femaleCount + maleCount) % 3) * 0.05
+            };
+          }
+          return {
+            index: idx,
+            type: 'dialogue',
+            speaker,
+            charInfo: characterMap[speaker],
+            text: spoken,
+            theme: detectTheme(spoken),
+            army: hasArmyKeyword(spoken)
+          };
         } else {
-            const masc = ptVoices.find(v => /duarte|cristiano|daniel|male|ricardo/i.test(v.name));
-            if (masc) utterance.voice = masc;
+          const cleaned = cleanSpokenText(line);
+          return {
+            index: idx,
+            type: 'narration',
+            speaker: 'Narrador',
+            charInfo: null,
+            text: cleaned,
+            theme: detectTheme(cleaned),
+            army: hasArmyKeyword(cleaned)
+          };
         }
+      });
+
+      // Detectar interlocutores (quem fala e quem responde na sequência)
+      for (let i = 0; i < parsed.length; i++) {
+        if (parsed[i].type === 'dialogue') {
+          const participants = new Set([parsed[i].speaker]);
+          if (i + 1 < parsed.length && parsed[i + 1].type === 'dialogue') {
+            participants.add(parsed[i + 1].speaker);
+          } else if (i - 1 >= 0 && parsed[i - 1].type === 'dialogue') {
+            participants.add(parsed[i - 1].speaker);
+          }
+          parsed[i].participants = Array.from(participants);
+        } else {
+          parsed[i].participants = [];
+        }
+      }
+
+      return { parsed, characters: Object.values(characterMap) };
     }
 
-    if (speaker === "Narrador") utterance.pitch = 1.0;
-    else if (speaker === "Mira") utterance.pitch = 1.25;
-    else if (speaker === "Edric" || speaker === "Seran") utterance.pitch = 0.78;
-    else if (speaker === "Lorian") utterance.pitch = 0.9;
-    else utterance.pitch = 0.95;
-}
+    // =========================================================
+    // 3. MOTOR 3D (THREE.JS) — CENÁRIOS, ÁRVORES, AVATARES E SOLDADOS
+    // =========================================================
+    const container = document.getElementById('canvas-container');
+    const scene = new THREE.Scene();
+    scene.fog = new THREE.FogExp2(0x1e293b, 0.022);
 
-function speakSegment(segment, token) {
-    if (!running || paused || token !== speechToken) return;
+    const camera = new THREE.PerspectiveCamera(48, window.innerWidth / window.innerHeight, 0.1, 200);
+    camera.position.set(0, 4.2, 11.5);
+    camera.lookAt(0, 1.5, 0);
 
-    currentSegment = segment;
-    setScene(segment.scene, segment.title, segment.people, segment.soldiers);
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.shadowMap.enabled = true;
+    container.appendChild(renderer.domElement);
 
-    speakingCharacter = segment.speaker !== "Narrador" ? segment.speaker : null;
-    speechBubble = segment.speaker !== "Narrador" ? segment.text : "";
+    // Luzes
+    const hemiLight = new THREE.HemisphereLight(0xfffbeb, 0x1e293b, 1.1);
+    scene.add(hemiLight);
 
-    if (segment.action && characters[segment.action.actor]) {
-        characters[segment.action.actor].action = segment.action.type;
+    const dirLight = new THREE.DirectionalLight(0xfff3c4, 1.3);
+    dirLight.position.set(8, 16, 10);
+    dirLight.castShadow = true;
+    scene.add(dirLight);
+
+    // Chão
+    const groundMat = new THREE.MeshStandardMaterial({ color: 0x2d5a27, roughness: 0.9 });
+    const ground = new THREE.Mesh(new THREE.PlaneGeometry(120, 120), groundMat);
+    ground.rotation.x = -Math.PI / 2;
+    ground.receiveShadow = true;
+    scene.add(ground);
+
+    // Grupos de Cenário
+    const envGroup = new THREE.Group();
+    const treesGroup = new THREE.Group();
+    const mountainsGroup = new THREE.Group();
+    const waterMesh = new THREE.Mesh(
+      new THREE.PlaneGeometry(120, 18),
+      new THREE.MeshStandardMaterial({ color: 0x0284c7, roughness: 0.2, metalness: 0.5 })
+    );
+    waterMesh.rotation.x = -Math.PI / 2;
+    waterMesh.position.set(0, 0.03, -12);
+    waterMesh.visible = false;
+
+    scene.add(envGroup, treesGroup, mountainsGroup, waterMesh);
+
+    // Criar Árvores Básicas para Clima
+    function createTree(x, z, scale = 1) {
+      const tree = new THREE.Group();
+      const trunk = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.18 * scale, 0.26 * scale, 1.5 * scale, 8),
+        new THREE.MeshStandardMaterial({ color: 0x5c3a21 })
+      );
+      trunk.position.y = 0.75 * scale;
+      const crown = new THREE.Mesh(
+        new THREE.ConeGeometry(1.1 * scale, 2.6 * scale, 8),
+        new THREE.MeshStandardMaterial({ color: 0x15803d })
+      );
+      crown.position.y = 2.3 * scale;
+      tree.add(trunk, crown);
+      tree.position.set(x, 0, z);
+      return tree;
     }
 
-    updateStoryText(segment);
-    clearTimeout(speechTimer);
+    const treeCoords = [[-8, -4], [-6, -9], [7, -5], [9, -10], [-11, 1], [11, 2], [-3, -14], [4, -15]];
+    treeCoords.forEach(([x, z], i) => treesGroup.add(createTree(x, z, 0.9 + (i % 3) * 0.25)));
 
-    const voiceEnabled = document.getElementById("voiceToggle").checked;
+    // Criar Montanhas ao Fundo
+    function createMountain(x, z, radius, height) {
+      const m = new THREE.Mesh(
+        new THREE.ConeGeometry(radius, height, 6),
+        new THREE.MeshStandardMaterial({ color: 0x475569, roughness: 0.95 })
+      );
+      m.position.set(x, height / 2 - 0.2, z);
+      return m;
+    }
+    mountainsGroup.add(
+      createMountain(-14, -26, 9, 14),
+      createMountain(0, -30, 12, 18),
+      createMountain(15, -25, 10, 15)
+    );
 
-    if (voiceEnabled && "speechSynthesis" in window) {
+    const themesList = ['castelo', 'floresta', 'montanha', 'agua', 'guerra'];
+    let currentTheme = 'castelo';
+
+    function applySceneTheme(theme) {
+      currentTheme = theme;
+      document.getElementById('scene-indicator').textContent = `Cenário: ${theme.toUpperCase()}`;
+      waterMesh.visible = (theme === 'agua');
+      mountainsGroup.visible = (theme === 'montanha' || theme === 'castelo' || theme === 'guerra');
+      treesGroup.visible = true;
+
+      if (theme === 'floresta') {
+        scene.background = new THREE.Color(0x143326);
+        scene.fog.color.setHex(0x143326);
+        groundMat.color.setHex(0x1e4620);
+      } else if (theme === 'montanha') {
+        scene.background = new THREE.Color(0x334155);
+        scene.fog.color.setHex(0x334155);
+        groundMat.color.setHex(0x4b5563);
+      } else if (theme === 'agua') {
+        scene.background = new THREE.Color(0x0c4a6e);
+        scene.fog.color.setHex(0x0c4a6e);
+        groundMat.color.setHex(0x2e6f40);
+      } else if (theme === 'guerra') {
+        scene.background = new THREE.Color(0x3b1717);
+        scene.fog.color.setHex(0x3b1717);
+        groundMat.color.setHex(0x3f2e26);
+      } else {
+        scene.background = new THREE.Color(0x1e293b);
+        scene.fog.color.setHex(0x1e293b);
+        groundMat.color.setHex(0x2d5a27);
+      }
+    }
+
+    // =========================================================
+    // 4. CONSTRUTOR DE AVATARES 3D E SOLDADOS
+    // =========================================================
+    const avatarsMap = {};
+    const soldiersGroup = new THREE.Group();
+    scene.add(soldiersGroup);
+
+    function buildAvatarMesh(charInfo) {
+      const group = new THREE.Group();
+      const bodyColor = new THREE.Color(charInfo.color);
+
+      // Tronco
+      const torsoGeo = charInfo.gender === 'F'
+        ? new THREE.CylinderGeometry(0.32, 0.55, 1.35, 12)
+        : new THREE.CylinderGeometry(0.45, 0.38, 1.4, 12);
+      const torso = new THREE.Mesh(torsoGeo, new THREE.MeshStandardMaterial({ color: bodyColor }));
+      torso.position.y = 1.25;
+      torso.castShadow = true;
+
+      // Cabeça
+      const head = new THREE.Mesh(
+        new THREE.SphereGeometry(0.36, 16, 16),
+        new THREE.MeshStandardMaterial({ color: 0xfcd34d })
+      );
+      head.position.y = 2.25;
+      head.castShadow = true;
+
+      // Detalhe de cabelo/coroa para diferenciar
+      const hair = new THREE.Mesh(
+        new THREE.SphereGeometry(0.38, 16, 12, 0, Math.PI * 2, 0, Math.PI * 0.55),
+        new THREE.MeshStandardMaterial({ color: charInfo.gender === 'F' ? 0x451a03 : 0x1e293b })
+      );
+      hair.position.y = 2.3;
+
+      // Pernas
+      const legMat = new THREE.MeshStandardMaterial({ color: 0x1e293b });
+      const leftLeg = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.12, 0.7, 8), legMat);
+      leftLeg.position.set(-0.18, 0.35, 0);
+      const rightLeg = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.12, 0.7, 8), legMat);
+      rightLeg.position.set(0.18, 0.35, 0);
+
+      group.add(torso, head, hair, leftLeg, rightLeg);
+      group.visible = false;
+      scene.add(group);
+
+      return {
+        mesh: group,
+        leftLeg,
+        rightLeg,
+        info: charInfo,
+        baseX: 0,
+        targetX: 0,
+        phase: Math.random() * Math.PI * 2
+      };
+    }
+
+    // Criar Soldados do Exército
+    for (let i = 0; i < 10; i++) {
+      const soldier = buildAvatarMesh({ name: 'Soldado', gender: 'M', color: '#64748b' });
+      const row = Math.floor(i / 5);
+      const col = (i % 5) - 2;
+      soldier.mesh.position.set(col * 2.2, 0, -5.5 - row * 2.2);
+      soldier.mesh.scale.set(0.88, 0.88, 0.88);
+      soldiersGroup.add(soldier.mesh);
+      soldier.mesh.visible = true;
+    }
+    soldiersGroup.visible = false;
+
+    function rebuildCharacters(characters) {
+      Object.values(avatarsMap).forEach(a => scene.remove(a.mesh));
+      for (const key in avatarsMap) delete avatarsMap[key];
+
+      characters.forEach((c) => {
+        avatarsMap[c.name] = buildAvatarMesh(c);
+      });
+    }
+
+    // =========================================================
+    // 5. SÍNTESE DE VOZ (WEB SPEECH API)
+    // =========================================================
+    function loadVoices() {
+      availableVoices = window.speechSynthesis.getVoices();
+    }
+    window.speechSynthesis.onvoiceschanged = loadVoices;
+    loadVoices();
+
+    function pickVoiceForGender(gender) {
+      const ptVoices = availableVoices.filter(v => v.lang.toLowerCase().includes('pt'));
+      if (!ptVoices.length) return null;
+      if (gender === 'F') {
+        return ptVoices.find(v => /maria|luciana|francisca|female|mulher|google português/i.test(v.name)) || ptVoices[0];
+      } else {
+        return ptVoices.find(v => /daniel|antonio|felipe|male|homem/i.test(v.name)) || ptVoices[ptVoices.length - 1];
+      }
+    }
+
+    function speakSegment(seg, onDone) {
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(seg.text);
+      utterance.lang = 'pt-BR';
+
+      if (seg.type === 'dialogue' && seg.charInfo) {
+        const v = pickVoiceForGender(seg.charInfo.gender);
+        if (v) utterance.voice = v;
+        utterance.pitch = seg.charInfo.pitch;
+        utterance.rate = seg.charInfo.rate;
+      } else {
+        // Voz de Narrador
+        const v = pickVoiceForGender('M');
+        if (v) utterance.voice = v;
+        utterance.pitch = 0.82;
+        utterance.rate = 0.96;
+      }
+
+      utterance.onend = () => { if (isPlaying) onDone(); };
+      utterance.onerror = () => { if (isPlaying) onDone(); };
+      window.speechSynthesis.speak(utterance);
+    }
+
+    // =========================================================
+    // 6. DIREÇÃO DE CENA, BALÕES E CONTROLE DE PROGRESSO
+    // =========================================================
+    const bubblesLayer = document.getElementById('bubbles-layer');
+
+    function updateSceneForSegment(seg) {
+      // Atualizar texto de fundo destacado
+      document.querySelectorAll('.segment-span').forEach((el, idx) => {
+        el.classList.toggle('active', idx === seg.index);
+        if (idx === seg.index) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      });
+
+      // Mudar paisagem conforme palavra-chave
+      applySceneTheme(seg.theme);
+
+      // Limpar balões antigos
+      bubblesLayer.innerHTML = '';
+
+      if (seg.type === 'narration') {
+        // Na narração, os personagens e soldados desaparecem para mostrar a paisagem
+        Object.values(avatarsMap).forEach(a => a.mesh.visible = false);
+        soldiersGroup.visible = false;
+
+        document.getElementById('speaker-icon').textContent = '🧙‍♂️';
+        document.getElementById('speaker-label').textContent = 'Narrador';
+        document.getElementById('subtitle-text').textContent = seg.text;
+      } else {
+        // Diálogo: exibir quem fala e quem responde
+        const activeNames = seg.participants;
+        Object.values(avatarsMap).forEach(a => { a.mesh.visible = false; });
+
+        activeNames.forEach((name, idx) => {
+          const av = avatarsMap[name];
+          if (!av) return;
+          av.mesh.visible = true;
+          const spread = activeNames.length === 1 ? 0 : (idx === 0 ? -1.7 : 1.7);
+          av.baseX = spread;
+          av.mesh.position.set(spread, 0, 0.8);
+        });
+
+        // Exército aparece apenas se mencionado e fora da narração
+        soldiersGroup.visible = seg.army;
+
+        document.getElementById('speaker-icon').textContent = seg.charInfo.gender === 'F' ? '👸' : '🤴';
+        document.getElementById('speaker-label').textContent = seg.speaker;
+        document.getElementById('subtitle-text').textContent = seg.text;
+
+        // Criar balão flutuante para quem está falando agora
+        const bubble = document.createElement('div');
+        bubble.className = 'speech-bubble';
+        bubble.id = 'active-speech-bubble';
+        bubble.innerHTML = `
+          <div class="bubble-name" style="background:${seg.charInfo.color}">${seg.speaker}</div>
+          <div class="bubble-text">${seg.text}</div>
+        `;
+        bubblesLayer.appendChild(bubble);
+      }
+
+      updateProgressUI();
+    }
+
+    function updateProgressUI() {
+      const total = segments.length || 1;
+      const pct = Math.round(((currentSegIndex + 1) / total) * 100);
+      document.getElementById('progress-slider').value = pct;
+      document.getElementById('percent-label').textContent = `${pct}%`;
+
+      // Estimativa de tempo restante (~13 caracteres por segundo)
+      const remainingChars = segments.slice(currentSegIndex).reduce((acc, s) => acc + s.text.length, 0);
+      const totalSec = Math.max(0, Math.ceil(remainingChars / 13));
+      const mins = String(Math.floor(totalSec / 60)).padStart(2, '0');
+      const secs = String(totalSec % 60).padStart(2, '0');
+      document.getElementById('time-remaining').textContent = `Faltam ${mins}:${secs}`;
+    }
+
+    function playCurrentStep() {
+      if (!segments.length) return;
+      const seg = segments[currentSegIndex];
+      updateSceneForSegment(seg);
+
+      if (isPlaying) {
+        speakSegment(seg, () => {
+          if (currentSegIndex < segments.length - 1) {
+            currentSegIndex++;
+            playCurrentStep();
+          } else if (currentPageIndex < pages.length - 1) {
+            // Avança automaticamente para a próxima página
+            loadPage(currentPageIndex + 1, true);
+          } else {
+            isPlaying = false;
+            document.getElementById('btn-play-pause').textContent = '▶ Reiniciar';
+          }
+        });
+      }
+    }
+
+    function loadPage(index, autoStart = false) {
+      currentPageIndex = index;
+      const page = pages[index];
+      document.getElementById('page-indicator').textContent = `Página ${index + 1} de ${pages.length}`;
+
+      const { parsed, characters } = parsePageSegments(page.text);
+      segments = parsed;
+      currentSegIndex = 0;
+
+      // Renderizar texto limpo no fundo
+      const bgContainer = document.getElementById('background-text-content');
+      bgContainer.innerHTML = `<h3 style="color:#fbbf24;margin-bottom:14px;">${cleanSpokenText(page.title)}</h3>` +
+        segments.map(s => `<span class="segment-span" data-idx="${s.index}">${s.type === 'dialogue' ? `<strong>${s.speaker}:</strong> ` : ''}${s.text}</span><br><br>`).join('');
+
+      rebuildCharacters(characters);
+
+      if (segments.length) {
+        updateSceneForSegment(segments[0]);
+      }
+      if (autoStart) {
+        isPlaying = true;
+        document.getElementById('btn-play-pause').textContent = '⏸ Pausar';
+        playCurrentStep();
+      }
+    }
+
+    // =========================================================
+    // 7. LOOP DE ANIMAÇÃO 3D (CAMINHAR, ESBARRAR E BALÃO 3D)
+    // =========================================================
+    const clock = new THREE.Clock();
+
+    function animate() {
+      requestAnimationFrame(animate);
+      const t = clock.getElapsedTime();
+
+      const seg = segments[currentSegIndex];
+      const activeList = seg && seg.type === 'dialogue'
+        ? seg.participants.map(n => avatarsMap[n]).filter(Boolean)
+        : [];
+
+      activeList.forEach((av, i) => {
+        // Movimento suave de caminhada enquanto conversam
+        const walkOffset = Math.sin(t * 1.6 + av.phase) * 0.75;
+        av.mesh.position.x = av.baseX + walkOffset;
+        av.mesh.position.z = 0.8 + Math.cos(t * 1.1 + av.phase) * 0.45;
+
+        // Balanço das pernas ao andar
+        av.leftLeg.rotation.x = Math.sin(t * 5) * 0.35;
+        av.rightLeg.rotation.x = -Math.sin(t * 5) * 0.35;
+
+        // Olhar na direção da conversa
+        av.mesh.rotation.y = activeList.length > 1 ? (i === 0 ? 0.45 : -0.45) : Math.sin(t * 0.8) * 0.2;
+      });
+
+      // Simular leve esbarrão e recuo se dois avatares chegarem muito perto
+      if (activeList.length === 2) {
+        const dist = activeList[1].mesh.position.x - activeList[0].mesh.position.x;
+        if (dist < 1.05) {
+          activeList[0].mesh.position.x -= 0.15;
+          activeList[1].mesh.position.x += 0.15;
+        }
+      }
+
+      // Atualizar posição 2D do balão de fala acima da cabeça do falante
+      const bubble = document.getElementById('active-speech-bubble');
+      if (bubble && seg && seg.type === 'dialogue' && avatarsMap[seg.speaker]) {
+        const speakerMesh = avatarsMap[seg.speaker].mesh;
+        const headPos = new THREE.Vector3(speakerMesh.position.x, 2.95, speakerMesh.position.z);
+        headPos.project(camera);
+
+        const x = (headPos.x * 0.5 + 0.5) * window.innerWidth;
+        const y = (-(headPos.y * 0.5) + 0.5) * window.innerHeight;
+        bubble.style.left = `${Math.max(140, Math.min(window.innerWidth - 140, x))}px`;
+        bubble.style.top = `${Math.max(95, y)}px`;
+        bubble.style.display = stageVisible ? 'block' : 'none';
+      }
+
+      renderer.render(scene, camera);
+    }
+    animate();
+
+    // =========================================================
+    // 8. EVENTOS DE INTERFACE E CONTROLES
+    // =========================================================
+    const dotsBtn = document.getElementById('dots-btn');
+    const dropdown = document.getElementById('dropdown-menu');
+    dotsBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      dropdown.classList.toggle('open');
+    });
+    document.addEventListener('click', () => dropdown.classList.remove('open'));
+
+    // Play / Pause
+    document.getElementById('btn-play-pause').addEventListener('click', () => {
+      if (isPlaying) {
+        isPlaying = false;
         window.speechSynthesis.cancel();
-        const utterance = new SpeechSynthesisUtterance(segment.text);
-        configureVoice(utterance, segment.speaker);
+        document.getElementById('btn-play-pause').textContent = '▶ Continuar';
+      } else {
+        if (currentSegIndex >= segments.length - 1 && document.getElementById('percent-label').textContent === '100%') {
+          currentSegIndex = 0;
+        }
+        isPlaying = true;
+        document.getElementById('btn-play-pause').textContent = '⏸ Pausar';
+        playCurrentStep();
+      }
+    });
 
-        utterance.onend = function() {
-            if (token !== speechToken || paused || !running) return;
-            nextSegment();
-        };
-        utterance.onerror = function() {
-            if (token !== speechToken || paused || !running) return;
-            nextSegment();
-        };
+    // Avançar / Voltar
+    document.getElementById('btn-next').addEventListener('click', () => {
+      window.speechSynthesis.cancel();
+      if (currentSegIndex < segments.length - 1) {
+        currentSegIndex++;
+        playCurrentStep();
+      } else if (currentPageIndex < pages.length - 1) {
+        loadPage(currentPageIndex + 1, isPlaying);
+      }
+    });
 
-        window.speechSynthesis.speak(utterance);
-    } else {
-        const duration = Math.max(1800, (segment.text.length * 48) / speechRate);
-        speechTimer = setTimeout(() => {
-            if (token !== speechToken || paused || !running) return;
-            nextSegment();
-        }, duration);
+    document.getElementById('btn-prev').addEventListener('click', () => {
+      window.speechSynthesis.cancel();
+      if (currentSegIndex > 0) {
+        currentSegIndex--;
+        playCurrentStep();
+      } else if (currentPageIndex > 0) {
+        loadPage(currentPageIndex - 1, isPlaying);
+      }
+    });
+
+    // Barra de Progresso Arrastável ("Scrubbing" rápido)
+    document.getElementById('progress-slider').addEventListener('input', (e) => {
+      const pct = Number(e.target.value);
+      const targetIdx = Math.min(segments.length - 1, Math.floor((pct / 100) * segments.length));
+      if (targetIdx !== currentSegIndex) {
+        currentSegIndex = targetIdx;
+        window.speechSynthesis.cancel();
+        playCurrentStep();
+      }
+    });
+
+    // Alternar Imagens 3D / Só Texto
+    document.getElementById('btn-toggle-stage').addEventListener('click', () => {
+      stageVisible = !stageVisible;
+      container.classList.toggle('hidden-stage', !stageVisible);
+      document.getElementById('btn-toggle-stage').textContent = stageVisible
+        ? '👁️ Limpar Imagens (Ver Só Texto)'
+        : '🎬 Mostrar Palco 3D';
+    });
+
+    // Trocar Paisagem Manualmente
+    document.getElementById('btn-cycle-bg').addEventListener('click', () => {
+      const next = themesList[(themesList.indexOf(currentTheme) + 1) % themesList.length];
+      applySceneTheme(next);
+    });
+
+    // Modal de Texto e Páginas
+    const modal = document.getElementById('editor-modal');
+    let editingPageIdx = 0;
+
+    function renderModalPages() {
+      const bar = document.getElementById('modal-pages-bar');
+      bar.innerHTML = pages.map((p, idx) =>
+        `<button class="page-chip ${idx === editingPageIdx ? 'active' : ''}" data-p="${idx}">Página ${idx + 1}</button>`
+      ).join('') + `<button class="page-chip" id="modal-new-page">+ Nova Página</button>`;
+
+      bar.querySelectorAll('[data-p]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          pages[editingPageIdx].title = document.getElementById('page-title-input').value;
+          pages[editingPageIdx].text = document.getElementById('page-text-input').value;
+          editingPageIdx = Number(btn.dataset.p);
+          openEditor(editingPageIdx);
+        });
+      });
+
+      document.getElementById('modal-new-page').addEventListener('click', () => {
+        pages.push({ title: `Página ${pages.length + 1}`, text: 'Narrador começa uma nova cena.\nMaria: Vamos continuar nossa jornada!' });
+        editingPageIdx = pages.length - 1;
+        openEditor(editingPageIdx);
+      });
     }
-}
 
-function startStory() {
-    openStageTab();
-    if (running && !paused) return;
-    if (currentIndex >= story.length) {
-        restartStory();
-        return;
+    function openEditor(idx = currentPageIndex) {
+      editingPageIdx = idx;
+      renderModalPages();
+      document.getElementById('page-title-input').value = pages[idx].title;
+      document.getElementById('page-text-input').value = pages[idx].text;
+      modal.classList.add('open');
     }
-    running = true;
-    paused = false;
-    speechToken++;
-    speakSegment(story[currentIndex], speechToken);
-}
 
-function nextSegment() {
-    if (!running || paused) return;
-    currentIndex++;
-    if (currentIndex >= story.length) {
-        finishStory();
-        return;
-    }
-    speakSegment(story[currentIndex], speechToken);
-}
+    document.getElementById('btn-open-editor').addEventListener('click', () => openEditor(currentPageIndex));
+    document.getElementById('btn-add-page').addEventListener('click', () => {
+      pages.push({ title: `Página ${pages.length + 1}`, text: 'Uma nova paisagem surge no horizonte.\nJoão: Estamos quase lá!' });
+      openEditor(pages.length - 1);
+    });
 
-function skipNext() {
-    clearTimeout(speechTimer);
-    if ("speechSynthesis" in window) window.speechSynthesis.cancel();
-    if (currentIndex + 1 >= story.length) {
-        finishStory();
-        return;
-    }
-    currentIndex++;
-    running = true;
-    paused = false;
-    speechToken++;
-    speakSegment(story[currentIndex], speechToken);
-}
+    document.getElementById('btn-close-modal').addEventListener('click', () => modal.classList.remove('open'));
+    document.getElementById('btn-save-story').addEventListener('click', () => {
+      pages[editingPageIdx].title = document.getElementById('page-title-input').value || `Página ${editingPageIdx + 1}`;
+      pages[editingPageIdx].text = document.getElementById('page-text-input').value;
+      modal.classList.remove('open');
+      window.speechSynthesis.cancel();
+      isPlaying = false;
+      document.getElementById('btn-play-pause').textContent = '▶ Iniciar';
+      loadPage(editingPageIdx, false);
+    });
 
-function prevSegment() {
-    clearTimeout(speechTimer);
-    if ("speechSynthesis" in window) window.speechSynthesis.cancel();
-    currentIndex = Math.max(0, currentIndex - 1);
-    running = true;
-    paused = false;
-    speechToken++;
-    speakSegment(story[currentIndex], speechToken);
-}
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
 
-function jumpToScene(indexStr) {
-    openStageTab();
-    clearTimeout(speechTimer);
-    if ("speechSynthesis" in window) window.speechSynthesis.cancel();
-    currentIndex = parseInt(indexStr, 10) || 0;
-    running = true;
-    paused = false;
-    speechToken++;
-    speakSegment(story[currentIndex], speechToken);
-}
-
-function pauseStory() {
-    if (!running) return;
-    paused = true;
-    if ("speechSynthesis" in window) window.speechSynthesis.pause();
-    clearTimeout(speechTimer);
-}
-
-function resumeStory() {
-    if (!running || !paused) return;
-    paused = false;
-    if ("speechSynthesis" in window && window.speechSynthesis.paused) {
-        window.speechSynthesis.resume();
-    } else {
-        speechToken++;
-        speakSegment(story[currentIndex], speechToken);
-    }
-}
-
-function restartStory() {
-    running = false;
-    paused = false;
-    currentIndex = 0;
-    speechToken++;
-    clearTimeout(speechTimer);
-    if ("speechSynthesis" in window) window.speechSynthesis.cancel();
-
-    speakingCharacter = null;
-    speechBubble = "";
-    currentSegment = story[0];
-
-    document.getElementById("currentSpeaker").textContent = "📜 NARRADOR";
-    document.getElementById("currentText").textContent = "Pronto para começar. Carrega em INICIAR.";
-    document.getElementById("pageIndicator").textContent = `Página 1 / ${story.length}`;
-    document.getElementById("progress").style.width = "0%";
-    document.getElementById("progressPercent").textContent = "0%";
-
-    setScene(story[0].scene, story[0].title, story[0].people, story[0].soldiers);
-}
-
-function finishStory() {
-    running = false;
-    paused = false;
-    if ("speechSynthesis" in window) window.speechSynthesis.cancel();
-    speakingCharacter = null;
-    speechBubble = "";
-    document.getElementById("currentSpeaker").textContent = "📖 FIM";
-    document.getElementById("currentText").textContent = "A história terminou.";
-    document.getElementById("progress").style.width = "100%";
-    document.getElementById("progressPercent").textContent = "100%";
-}
-
-/* =====================================================
-   INICIALIZAÇÃO
-===================================================== */
-rebuildSceneDropdown();
-currentSegment = story[0];
-setScene(story[0].scene, story[0].title, story[0].people, story[0].soldiers);
-document.getElementById("pageIndicator").textContent = `Página 1 / ${story.length}`;
-</script>
-
+    // Inicializar primeira página
+    loadPage(0, false);
+  </script>
 </body>
 </html>
